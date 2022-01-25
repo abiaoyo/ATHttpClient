@@ -44,7 +44,9 @@
         }
     };
     
-    [ATHttpClient sendRequest:request success:^(ATHttpRequest * _Nonnull request, NSURLSessionDataTask * _Nonnull task, id  _Nullable response) {
+    [ATHttpClient sendRequest:request success:^(ATHttpRequest * _Nonnull request,
+                                                NSURLSessionDataTask * _Nonnull task,
+                                                id  _Nullable response) {
         NSLog(@"response:%@",response);
     } failure:^(ATHttpRequest * _Nonnull request, NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         NSLog(@"error:%@",error);
