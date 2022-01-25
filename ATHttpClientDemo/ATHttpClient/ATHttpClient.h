@@ -13,8 +13,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic,copy,class,readwrite) ATHttpFailureInterceptor globalFailureInterceptor;
 
 + (void)startNetworkMonitoring:(void (^)(AFNetworkReachabilityStatus status))monitoringBlock;
-
 + (NSString *)coverterNetworkStatus:(AFNetworkReachabilityStatus)status;
++ (AFNetworkReachabilityStatus)networkStatus;
 
 + (NSURLSessionDataTask * _Nullable)sendRequest:(ATHttpRequest *)reqeust
                                         success:(ATHttpRequestSuccess _Nullable)success

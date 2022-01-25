@@ -59,6 +59,10 @@ static ATHttpFailureInterceptor _globalFailureInterceptor = nil;
     }
 }
 
++ (AFNetworkReachabilityStatus)networkStatus{
+    return AFNetworkReachabilityManager.sharedManager.networkReachabilityStatus;
+}
+
 + (AFHTTPSessionManager *)defaultSessionManager{
     AFHTTPSessionManager * manager = [AFHTTPSessionManager manager];
     manager.requestSerializer = [AFJSONRequestSerializer serializer];
