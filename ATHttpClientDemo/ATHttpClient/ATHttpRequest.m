@@ -34,7 +34,40 @@
 }
 
 - (NSString *)requestInfo{
-    return [NSString stringWithFormat:@"请求信息: \n.name:%@\n.url:%@\n.headers:%@\n.params:%@",self.name,self.requestUrl,self.headers,self.params];
+    return [NSString stringWithFormat:@"请求信息: \n.name:%@\n.url:%@\n.method:%@\n.headers:%@\n.params:%@",self.name,self.requestUrl,self.methodName,self.headers,self.params];
+}
+
+- (NSString *)methodName{
+    switch (self.method) {
+        case ATHttpMethodGet:{
+            return @"GET";
+        }
+            break;
+        case ATHttpMethodPost:{
+            return @"POST";
+        }
+            break;
+        case ATHttpMethodPut:{
+            return @"PUT";
+        }
+            break;
+        case ATHttpMethodDelete:{
+            return @"DELETE";
+        }
+            break;
+        case ATHttpMethodHead:{
+            return @"HEAD";
+        }
+            break;
+        case ATHttpMethodPatch:{
+            return @"PATCH";
+        }
+            break;
+            
+        default:
+            break;
+    }
+    return @"";
 }
 
 - (NSString *)name{
