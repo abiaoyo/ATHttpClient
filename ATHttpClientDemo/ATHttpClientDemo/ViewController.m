@@ -25,14 +25,13 @@
     request.headers = @{};
     request.params = @{};
     request.name = @"测试接口";
-    request.retryTimes = 2;
+    request.tryCount = 2;
     request.successInterceptor = ^(ATHttpRequest * _Nonnull request,
                                    NSURLSessionDataTask * _Nullable task,
                                    id  _Nullable response,
                                    ATHttpRequestSuccess  _Nullable success,
                                    ATHttpRequestFailure  _Nullable failure) {
-        
-        NSLog(@"拦截器 响应: \n.url:%@\n",request.requestUrl);
+        NSLog(@"自定义响应拦截器: %@\n.response:%@\n",request.requestInfo,response);
         NSHTTPURLResponse * httpResponse = (NSHTTPURLResponse *)task.response;
         NSDictionary * formatResponse = @{
             @"status":@(httpResponse.statusCode),
@@ -62,7 +61,7 @@
     request.name = @"登录接口";
     request.requestInterceptor = ^(ATHttpRequest * _Nonnull request) {
         //登录接口比较特殊，不需要token，所以自定义请求拦截器为空实现即可
-        NSLog(@"自定义拦截器: %@",request.requestInfo);
+        NSLog(@"自定义请求拦截器: %@\n",request.requestInfo);
     };
     [ATHttpClient sendRequest:request success:^(ATHttpRequest * _Nonnull request,
                                                 NSURLSessionDataTask * _Nonnull task,

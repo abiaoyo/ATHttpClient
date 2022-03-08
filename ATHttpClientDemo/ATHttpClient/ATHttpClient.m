@@ -118,7 +118,7 @@ static ATHttpFailureInterceptor _globalFailureInterceptor = nil;
         return nil;
     }
     //减少重试次数
-    [reqeust reduceRetryTimes];
+    [reqeust incrTryTimes];
     
     //网络状态拦截
     AFNetworkReachabilityStatus networkStatus = AFNetworkReachabilityManager.sharedManager.networkReachabilityStatus;

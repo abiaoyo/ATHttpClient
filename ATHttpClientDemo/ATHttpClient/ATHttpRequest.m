@@ -10,23 +10,23 @@
 + (ATHttpRequest *)getRequest{
     ATHttpRequest * request = [ATHttpRequest new];
     request.method = ATHttpMethodGet;
-    request.retryTimes = 1;
+    request.tryCount = 1;
     return request;
 }
 
 + (ATHttpRequest *)postRequest{
     ATHttpRequest * request = [ATHttpRequest new];
     request.method = ATHttpMethodPost;
-    request.retryTimes = 1;
+    request.tryCount = 1;
     return request;
 }
 
 - (BOOL)canSendRequest{
-    return self.retryTimes > 0;
+    return self.tryTimes < self.tryCount;
 }
 
-- (void)reduceRetryTimes{
-    self.retryTimes -= 1;
+- (void)incrTryTimes{
+    self.tryTimes += 1;
 }
 
 - (NSString *)requestUrl{
@@ -34,7 +34,11 @@
 }
 
 - (NSString *)requestInfo{
-    return [NSString stringWithFormat:@"请求信息: \n.name:%@\n.url:%@\n.method:%@\n.headers:%@\n.params:%@",self.name,self.requestUrl,self.methodName,self.headers,self.params];
+    return [NSString stringWithFormat:@"\n.url:%@\n.method:%@\n.headers:%@\n.params:%@",self.requestUrl,self.methodName,self.headers,self.params];
+}
+
+- (NSString *)requestInfoExt{
+    return [NSString stringWithFormat:@" \n.name:%@\n.retryTimes:%@\n.tryCount:%@\n.url:%@\n.method:%@\n.headers:%@\n.params:%@",self.name,@(self.tryTimes),@(self.tryCount),self.requestUrl,self.methodName,self.headers,self.params];
 }
 
 - (NSString *)methodName{
@@ -77,19 +81,20 @@
     objc_setAssociatedObject(self, @selector(name), name, OBJC_ASSOCIATION_COPY_NONATOMIC);
 }
 
-- (NSString *)tag{
-    return objc_getAssociatedObject(self, _cmd);
-}
-- (void)setTag:(NSString *)tag{
-    objc_setAssociatedObject(self, @selector(tag), tag, OBJC_ASSOCIATION_COPY_NONATOMIC);
-}
-
-- (NSInteger)retryTimes{
+- (NSInteger)tryTimes{
     NSNumber * value = objc_getAssociatedObject(self, _cmd);
     return value.integerValue;
 }
-- (void)setRetryTimes:(NSInteger)retryTimes{
-    objc_setAssociatedObject(self, @selector(retryTimes), @(retryTimes), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+- (void)setTryTimes:(NSInteger)tryTimes{
+    objc_setAssociatedObject(self, @selector(tryTimes), @(tryTimes), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (NSInteger)tryCount{
+    NSNumber * value = objc_getAssociatedObject(self, _cmd);
+    return value.integerValue;
+}
+- (void)setTryCount:(NSInteger)tryCount{
+    objc_setAssociatedObject(self, @selector(tryCount), @(tryCount), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 - (ATHttpSessionManagerInterceptor)sessionManagerInterceptor{

@@ -18,13 +18,14 @@ NS_ASSUME_NONNULL_BEGIN
 + (ATHttpRequest *)postRequest;
 
 - (BOOL)canSendRequest;
-- (void)reduceRetryTimes;
+- (void)incrTryTimes;
 - (NSString *)requestUrl;
 - (NSString *)requestInfo;
+- (NSString *)requestInfoExt;
 - (NSString *)methodName;
 @property (nonatomic,copy) NSString * name;
-@property (nonatomic,copy) NSString * tag;
-@property (nonatomic,assign) NSInteger retryTimes; //默认为1，当为<=0时，将不会发起网络
+@property (nonatomic,assign) NSInteger tryTimes;
+@property (nonatomic,assign) NSInteger tryCount;
 @property (nonatomic,copy) ATHttpSessionManagerInterceptor sessionManagerInterceptor;
 @property (nonatomic,copy) ATHttpRequestInterceptor requestInterceptor;
 @property (nonatomic,copy) ATHttpSuccessInterceptor successInterceptor;
