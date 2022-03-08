@@ -16,6 +16,7 @@
 		186BA5E727D79A7A007DE402 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 186BA5E627D79A7A007DE402 /* main.m */; };
 		186BA5FB27D79C26007DE402 /* ATHttpRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 186BA5F927D79C26007DE402 /* ATHttpRequest.m */; };
 		186BA5FC27D79C26007DE402 /* ATHttpClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 186BA5FA27D79C26007DE402 /* ATHttpClient.m */; };
+		186BA5FF27D79E87007DE402 /* ATHttpRequestExt.m in Sources */ = {isa = PBXBuildFile; fileRef = 186BA5FE27D79E87007DE402 /* ATHttpRequestExt.m */; };
 		4A384384D53FFD7AAF6F9146 /* Pods_HttpClientDemo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B98E5BECBD685461F00B433F /* Pods_HttpClientDemo.framework */; };
 /* End PBXBuildFile section */
 
@@ -37,6 +38,8 @@
 		186BA5F827D79C26007DE402 /* ATHttpClientDef.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ATHttpClientDef.h; sourceTree = "<group>"; };
 		186BA5F927D79C26007DE402 /* ATHttpRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ATHttpRequest.m; sourceTree = "<group>"; };
 		186BA5FA27D79C26007DE402 /* ATHttpClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ATHttpClient.m; sourceTree = "<group>"; };
+		186BA5FD27D79E87007DE402 /* ATHttpRequestExt.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ATHttpRequestExt.h; sourceTree = "<group>"; };
+		186BA5FE27D79E87007DE402 /* ATHttpRequestExt.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ATHttpRequestExt.m; sourceTree = "<group>"; };
 		458CFD3DE09EB88E5E67EC7F /* Pods-HttpClientDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HttpClientDemo.release.xcconfig"; path = "Target Support Files/Pods-HttpClientDemo/Pods-HttpClientDemo.release.xcconfig"; sourceTree = "<group>"; };
 		84CA41FA0E43FA6DBFE67429 /* Pods-HttpClientDemo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HttpClientDemo.debug.xcconfig"; path = "Target Support Files/Pods-HttpClientDemo/Pods-HttpClientDemo.debug.xcconfig"; sourceTree = "<group>"; };
 		B98E5BECBD685461F00B433F /* Pods_HttpClientDemo.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_HttpClientDemo.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -108,6 +111,8 @@
 				186BA5F827D79C26007DE402 /* ATHttpClientDef.h */,
 				186BA5F627D79C26007DE402 /* ATHttpRequest.h */,
 				186BA5F927D79C26007DE402 /* ATHttpRequest.m */,
+				186BA5FD27D79E87007DE402 /* ATHttpRequestExt.h */,
+				186BA5FE27D79E87007DE402 /* ATHttpRequestExt.m */,
 			);
 			path = ATHttpClient;
 			sourceTree = "<group>";
@@ -233,6 +238,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				186BA5FF27D79E87007DE402 /* ATHttpRequestExt.m in Sources */,
 				186BA5DC27D79A70007DE402 /* ViewController.m in Sources */,
 				186BA5FC27D79C26007DE402 /* ATHttpClient.m in Sources */,
 				186BA5D627D79A70007DE402 /* AppDelegate.m in Sources */,

@@ -25,9 +25,9 @@
     request.api = @"/api?version=v6&appid=21375891&appsecret=fTYv7v5E&city=%E5%8D%97%E4%BA%AC";
     request.headers = @{};
     request.params = @{};
-    request.name = @"测试接口";
-    request.tryCount = 2;
-    request.successInterceptor = ^(ATHttpRequest * _Nonnull request,
+    request.ext.name = @"测试接口";
+    request.ext.tryCount = 2;
+    request.ext.successInterceptor = ^(ATHttpRequest * _Nonnull request,
                                    NSURLSessionDataTask * _Nullable task,
                                    id  _Nullable response,
                                    ATHttpRequestSuccess  _Nullable success,
@@ -59,8 +59,8 @@
     request.api = @"/v3/weather/weatherInfo?key=5d2d3e6c0d5188bec134fc4fc1b139e0&city=%E4%BB%99%E6%B8%B8&extensions=base";
     request.headers = @{};
     request.params = @{};
-    request.name = @"登录接口";
-    request.requestInterceptor = ^(ATHttpRequest * _Nonnull request) {
+    request.ext.name = @"登录接口";
+    request.ext.requestInterceptor = ^(ATHttpRequest * _Nonnull request) {
         //登录接口比较特殊，不需要token，所以自定义请求拦截器为空实现即可
         NSLog(@"自定义请求拦截器: %@\n",request.requestInfo);
     };
@@ -76,6 +76,20 @@
 }
 
 - (IBAction)clickButton3:(id)sender {
+    ATHttpRequest * request = [ATHttpRequest getRequest];
+    request.baseUrl = @"https://restapi.amap.com";
+    request.api = @"/v3/weather/weatherInfo?key=5d2d3e6c0d5188bec134fc4fc1b139e0&city=%E4%BB%99%E6%B8%B8&extensions=base";
+    request.ext.name = @"登录接口";
+    
+    [ATHttpClient sendRequest:request success:^(ATHttpRequest * _Nonnull request,
+                                                NSURLSessionDataTask * _Nonnull task,
+                                                id  _Nonnull response) {
+        
+    } failure:^(ATHttpRequest * _Nonnull request,
+                NSURLSessionDataTask * _Nullable task,
+                NSError * _Nonnull error) {
+        
+    }];
 }
 
 

@@ -133,17 +133,17 @@ static ATHttpFailureInterceptor _globalFailureInterceptor = nil;
         return nil;
     }
     
-    if(reqeust.sessionManagerInterceptor){
+    if(reqeust.ext.sessionManagerInterceptor){
         //Session Manager拦截器
-        reqeust.sessionManagerInterceptor(manager, reqeust);
+        reqeust.ext.sessionManagerInterceptor(manager, reqeust);
     }else if(_globalSessionManagerInterceptor){
         //Session Manager拦截器(全局)
         manager = _globalSessionManagerInterceptor(manager,reqeust);
     }
     
-    if(reqeust.requestInterceptor){
+    if(reqeust.ext.requestInterceptor){
         //请求拦截器
-        reqeust.requestInterceptor(reqeust);
+        reqeust.ext.requestInterceptor(reqeust);
     }else if(_globalRequestInterceptor){
         //请求拦截器(全局)
         _globalRequestInterceptor(reqeust);
@@ -182,8 +182,8 @@ static ATHttpFailureInterceptor _globalFailureInterceptor = nil;
                                                                  success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
             [manager.session finishTasksAndInvalidate];
             //请求成功拦截器
-            if(reqeust.successInterceptor){
-                reqeust.successInterceptor(reqeust, task, responseObject, success, failure);
+            if(reqeust.ext.successInterceptor){
+                reqeust.ext.successInterceptor(reqeust, task, responseObject, success, failure);
                 return;
             }
             //请求成功拦截器(全局)
@@ -197,8 +197,8 @@ static ATHttpFailureInterceptor _globalFailureInterceptor = nil;
         } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
             [manager.session finishTasksAndInvalidate];
             //请求成功拦截器
-            if(reqeust.failureInterceptor){
-                reqeust.failureInterceptor(reqeust, task, error, uploadProgress, downloadProgress, success, failure);
+            if(reqeust.ext.failureInterceptor){
+                reqeust.ext.failureInterceptor(reqeust, task, error, uploadProgress, downloadProgress, success, failure);
                 return;
             }
             //请求失败拦截器(全局)
