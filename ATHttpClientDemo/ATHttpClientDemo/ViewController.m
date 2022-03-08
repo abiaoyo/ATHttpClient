@@ -32,7 +32,7 @@
                                    ATHttpRequestSuccess  _Nullable success,
                                    ATHttpRequestFailure  _Nullable failure) {
         
-        NSLog(@"request 拦截器 响应: \n.url:%@\n",request.requestUrl);
+        NSLog(@"拦截器 响应: \n.url:%@\n",request.requestUrl);
         NSHTTPURLResponse * httpResponse = (NSHTTPURLResponse *)task.response;
         NSDictionary * formatResponse = @{
             @"status":@(httpResponse.statusCode),
@@ -47,9 +47,9 @@
     [ATHttpClient sendRequest:request success:^(ATHttpRequest * _Nonnull request,
                                                 NSURLSessionDataTask * _Nonnull task,
                                                 id  _Nullable response) {
-        NSLog(@"response:%@",response);
+        
     } failure:^(ATHttpRequest * _Nonnull request, NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        NSLog(@"error:%@",error);
+        
     }];
 }
 
@@ -62,16 +62,16 @@
     request.name = @"登录接口";
     request.requestInterceptor = ^(ATHttpRequest * _Nonnull request) {
         //登录接口比较特殊，不需要token，所以自定义请求拦截器为空实现即可
-        NSLog(@"request 拦截器 请求: \n.name:%@\n.url:%@\n",request.name,request.requestUrl);
+        NSLog(@"自定义拦截器: %@",request.requestInfo);
     };
     [ATHttpClient sendRequest:request success:^(ATHttpRequest * _Nonnull request,
                                                 NSURLSessionDataTask * _Nonnull task,
                                                 id  _Nonnull response) {
-        NSLog(@"response:%@",response);
+        
     } failure:^(ATHttpRequest * _Nonnull request,
                 NSURLSessionDataTask * _Nullable task,
                 NSError * _Nonnull error) {
-        NSLog(@"error:%@",error);
+        
     }];
 }
 

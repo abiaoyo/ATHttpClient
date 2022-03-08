@@ -33,6 +33,10 @@
     return [NSString stringWithFormat:@"%@%@",self.baseUrl,self.api];
 }
 
+- (NSString *)requestInfo{
+    return [NSString stringWithFormat:@"请求信息: \n.name:%@\n.url:%@\n.headers:%@\n.params:%@",self.name,self.requestUrl,self.headers,self.params];
+}
+
 - (NSString *)name{
     return objc_getAssociatedObject(self, _cmd);
 }

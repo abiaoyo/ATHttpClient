@@ -20,6 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)canSendRequest;
 - (void)reduceRetryTimes;
 - (NSString *)requestUrl;
+- (NSString *)requestInfo;
 @property (nonatomic,copy) NSString * name;
 @property (nonatomic,copy) NSString * tag;
 @property (nonatomic,assign) NSInteger retryTimes; //默认为1，当为<=0时，将不会发起网络

@@ -22,14 +22,14 @@
     }];
     
     [ATHttpClient setGlobalRequestInterceptor:^(ATHttpRequest * _Nonnull request) {
-        NSLog(@"拦截器 请求: \n.name:%@\n.url:%@\n",request.name,request.requestUrl);
+        NSLog(@"全局请求拦截器: %@",request.requestInfo);
     }];
     [ATHttpClient setGlobalSuccessInterceptor:^(ATHttpRequest * _Nonnull request,
                                                 NSURLSessionDataTask * _Nullable task,
                                                 id  _Nullable response,
                                                 ATHttpRequestSuccess  _Nullable success,
                                                 ATHttpRequestFailure  _Nullable failure) {
-        NSLog(@"拦截器 响应: \n.url:%@\n",request.requestUrl);
+        NSLog(@"全局响应拦截器: \n.url:%@\n.response:%@",request.requestUrl,response);
         NSHTTPURLResponse * httpResponse = (NSHTTPURLResponse *)task.response;
         NSDictionary * formatResponse = @{
             @"statusCode":@(httpResponse.statusCode),
@@ -47,7 +47,7 @@
                                                 ATHttpDownloadProgress  _Nullable downloadProgress,
                                                 ATHttpRequestSuccess  _Nullable success,
                                                 ATHttpRequestFailure  _Nullable failure) {
-        NSLog(@"拦截器 异常: \n.url:%@  error:%@\n",request.requestUrl,error.localizedDescription);
+        NSLog(@"全局异常拦截器: \n.url:%@  error:%@\n",request.requestUrl,error.localizedDescription);
         if([request canSendRequest]){
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                 [ATHttpClient sendRequest:request
