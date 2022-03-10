@@ -10,6 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic,assign) NSInteger tryCount;
 @property (nonatomic,copy) ATHttpSessionManagerInterceptor sessionManagerInterceptor;
 @property (nonatomic,copy) ATHttpRequestInterceptor requestInterceptor;
+@property (nonatomic,copy) ATHttpResponseInterceptor responseInterceptor;
 @property (nonatomic,copy) ATHttpSuccessInterceptor successInterceptor;
 @property (nonatomic,copy) ATHttpFailureInterceptor failureInterceptor;
 

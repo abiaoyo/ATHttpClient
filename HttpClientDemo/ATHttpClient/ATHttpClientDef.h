@@ -15,30 +15,33 @@ typedef NS_ENUM(NSInteger,ATHttpMethod){
 
 @class ATHttpRequest;
 typedef void (^ATHttpRequestSuccess)(ATHttpRequest * _Nonnull request,
-                                   NSURLSessionDataTask * _Nullable task,
-                                   id _Nullable response);
+                                     NSURLSessionDataTask * _Nullable task,
+                                     id _Nullable response);
 
 typedef void (^ATHttpRequestFailure)(ATHttpRequest * _Nonnull request,
-                                   NSURLSessionDataTask * _Nullable task,
-                                   NSError * _Nullable error);
+                                     NSURLSessionDataTask * _Nullable task,
+                                     NSError * _Nullable error);
 
 typedef void (^ATHttpUploadProgress)(NSProgress * _Nullable uploadProgress);
 typedef void (^ATHttpDownloadProgress)(NSProgress * _Nullable downloadProgress);
 typedef AFHTTPSessionManager * _Nonnull (^ATHttpSessionManagerInterceptor)(AFHTTPSessionManager * _Nonnull manager, ATHttpRequest * _Nonnull request);
-typedef void (^ATHttpRequestInterceptor)(ATHttpRequest * _Nonnull request);
+typedef void (^ATHttpRequestInterceptor)(AFHTTPSessionManager * _Nonnull manager,
+                                         ATHttpRequest * _Nonnull request);
+typedef void (^ATHttpResponseInterceptor)(ATHttpRequest * _Nonnull request,
+                                          NSURLSessionDataTask * _Nullable task,
+                                          id _Nullable response,
+                                          NSError * _Nullable error);
 
 typedef void (^ATHttpSuccessInterceptor)(ATHttpRequest * _Nonnull request,
-                                       NSURLSessionDataTask * _Nullable task,
-                                       id _Nullable response,
-                                       ATHttpRequestSuccess _Nullable success,
-                                       ATHttpRequestFailure _Nullable failure);
+                                         NSURLSessionDataTask * _Nullable task,
+                                         id _Nullable response,
+                                         ATHttpRequestSuccess _Nullable success,
+                                         ATHttpRequestFailure _Nullable failure);
 
 typedef void (^ATHttpFailureInterceptor)(ATHttpRequest * _Nonnull request,
-                                       NSURLSessionDataTask * _Nullable task,
-                                       NSError * _Nullable error,
-                                       ATHttpUploadProgress _Nullable uploadProgress,
-                                       ATHttpDownloadProgress _Nullable downloadProgress,
-                                       ATHttpRequestSuccess _Nullable success,
-                                       ATHttpRequestFailure _Nullable failure);
+                                         NSURLSessionDataTask * _Nullable task,
+                                         NSError * _Nullable error,
+                                         ATHttpRequestSuccess _Nullable success,
+                                         ATHttpRequestFailure _Nullable failure);
 
 #endif /* ATHttpClientDef_h */

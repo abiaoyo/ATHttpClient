@@ -20,15 +20,22 @@
         NSLog(@"网络状态: %@",[ATHttpClient coverterNetworkStatus:status]);
     }];
     
-    [ATHttpClient setGlobalRequestInterceptor:^(ATHttpRequest * _Nonnull request) {
-        NSLog(@"全局请求拦截器: %@\n",request.requestInfoExt);
+    [ATHttpClient setGlobalRequestInterceptor:^(AFHTTPSessionManager * _Nonnull manager, ATHttpRequest * _Nonnull request) {
+        NSLog(@"全局请求拦截器: %@\n.reqHeaders:%@\n",request.requestInfoExt,[manager.requestSerializer HTTPRequestHeaders]);
+    }];
+    [ATHttpClient setGlobalResponseInterceptor:^(ATHttpRequest * _Nonnull request,
+                                                 NSURLSessionDataTask * _Nullable task,
+                                                 id  _Nullable response,
+                                                 NSError * _Nullable error) {
+        NSDictionary * respHeader = ((NSHTTPURLResponse *)task.response).allHeaderFields;
+        NSLog(@"全局响应拦截器: %@\n.respHeaders: %@\n.response: %@\n",request.requestInfoExt,respHeader,response);
     }];
     [ATHttpClient setGlobalSuccessInterceptor:^(ATHttpRequest * _Nonnull request,
                                                 NSURLSessionDataTask * _Nullable task,
                                                 id  _Nullable response,
                                                 ATHttpRequestSuccess  _Nullable success,
                                                 ATHttpRequestFailure  _Nullable failure) {
-        NSLog(@"全局响应拦截器: %@\n.response: %@\n",request.requestInfoExt,response);
+        NSLog(@"全局成功拦截器: %@\n",request.requestInfoExt);
         NSHTTPURLResponse * httpResponse = (NSHTTPURLResponse *)task.response;
         NSDictionary * formatResponse = @{
             @"statusCode":@(httpResponse.statusCode),
@@ -42,24 +49,9 @@
     [ATHttpClient setGlobalFailureInterceptor:^(ATHttpRequest * _Nonnull request,
                                                 NSURLSessionDataTask * _Nullable task,
                                                 NSError * _Nullable error,
-                                                ATHttpUploadProgress  _Nullable uploadProgress,
-                                                ATHttpDownloadProgress  _Nullable downloadProgress,
                                                 ATHttpRequestSuccess  _Nullable success,
                                                 ATHttpRequestFailure  _Nullable failure) {
-        NSLog(@"全局异常拦截器: %@\n.error:%@\n",request.requestInfoExt,error.localizedDescription);
-        if([request canSendRequest]){
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                [ATHttpClient sendRequest:request
-                           uploadProgress:uploadProgress
-                         downloadProgress:downloadProgress
-                                  success:success
-                                  failure:failure];
-            });
-        }else{
-            if(failure){
-                failure(request,task,error);
-            }
-        }
+        NSLog(@"全局失败拦截器: %@\n.error:%@\n",request.requestInfoExt,error.localizedDescription);
     }];
     
     return YES;

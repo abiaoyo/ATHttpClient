@@ -60,7 +60,7 @@
     request.headers = @{};
     request.params = @{};
     request.ext.name = @"登录接口";
-    request.ext.requestInterceptor = ^(ATHttpRequest * _Nonnull request) {
+    request.ext.requestInterceptor = ^(AFHTTPSessionManager * _Nonnull manager, ATHttpRequest * _Nonnull request) {
         //登录接口比较特殊，不需要token，所以自定义请求拦截器为空实现即可
         NSLog(@"自定义请求拦截器: %@\n",request.requestInfo);
     };

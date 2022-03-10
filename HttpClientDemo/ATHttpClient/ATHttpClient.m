@@ -2,8 +2,10 @@
 
 static ATHttpSessionManagerInterceptor _globalSessionManagerInterceptor = nil;
 static ATHttpRequestInterceptor _globalRequestInterceptor = nil;
+static ATHttpResponseInterceptor _globalResponseInterceptor = nil;
 static ATHttpSuccessInterceptor _globalSuccessInterceptor = nil;
 static ATHttpFailureInterceptor _globalFailureInterceptor = nil;
+
 
 @implementation ATHttpClient
 
@@ -19,6 +21,13 @@ static ATHttpFailureInterceptor _globalFailureInterceptor = nil;
 }
 + (void)setGlobalRequestInterceptor:(ATHttpRequestInterceptor)globalRequestInterceptor{
     _globalRequestInterceptor = [globalRequestInterceptor copy];
+}
+
++ (ATHttpResponseInterceptor)globalResponseInterceptor{
+    return _globalResponseInterceptor;
+}
++ (void)setGlobalResponseInterceptor:(ATHttpResponseInterceptor)globalResponseInterceptor{
+    _globalResponseInterceptor = [globalResponseInterceptor copy];
 }
 
 + (ATHttpSuccessInterceptor)globalSuccessInterceptor{
@@ -79,11 +88,11 @@ static ATHttpFailureInterceptor _globalFailureInterceptor = nil;
     return manager;
 }
 
-+ (NSURLSessionDataTask *)sendRequest:(ATHttpRequest *)reqeust
++ (NSURLSessionDataTask *)sendRequest:(ATHttpRequest *)request
                               success:(ATHttpRequestSuccess)success
                               failure:(ATHttpRequestFailure)failure{
     AFHTTPSessionManager * manager = [self defaultSessionManager];
-    return [self sendRequest:reqeust
+    return [self sendRequest:request
                      manager:manager
               uploadProgress:nil
             downloadProgress:nil
@@ -91,14 +100,14 @@ static ATHttpFailureInterceptor _globalFailureInterceptor = nil;
                      failure:failure];
 }
 
-+ (NSURLSessionDataTask *)sendRequest:(ATHttpRequest *)reqeust
++ (NSURLSessionDataTask *)sendRequest:(ATHttpRequest *)request
                        uploadProgress:(ATHttpUploadProgress)uploadProgress
                      downloadProgress:(ATHttpDownloadProgress)downloadProgress
                               success:(ATHttpRequestSuccess)success
                               failure:(ATHttpRequestFailure)failure
 {
     AFHTTPSessionManager * manager = [self defaultSessionManager];
-    return [self sendRequest:reqeust
+    return [self sendRequest:request
                      manager:manager
               uploadProgress:uploadProgress
             downloadProgress:downloadProgress
@@ -106,7 +115,7 @@ static ATHttpFailureInterceptor _globalFailureInterceptor = nil;
                      failure:failure];
 }
 
-+ (NSURLSessionDataTask *)sendRequest:(ATHttpRequest *)reqeust
++ (NSURLSessionDataTask *)sendRequest:(ATHttpRequest *)request
                               manager:(AFHTTPSessionManager *)manager
                        uploadProgress:(ATHttpUploadProgress)uploadProgress
                      downloadProgress:(ATHttpDownloadProgress)downloadProgress
@@ -114,11 +123,11 @@ static ATHttpFailureInterceptor _globalFailureInterceptor = nil;
                               failure:(ATHttpRequestFailure)failure
 {
     //判断是否能请求
-    if(![reqeust canSendRequest]){
+    if(![request canSendRequest]){
         return nil;
     }
     //减少重试次数
-    [reqeust incrTryTimes];
+    [request incrTryTimes];
     
     //网络状态拦截
     AFNetworkReachabilityStatus networkStatus = AFNetworkReachabilityManager.sharedManager.networkReachabilityStatus;
@@ -128,29 +137,29 @@ static ATHttpFailureInterceptor _globalFailureInterceptor = nil;
             NSError * error = [NSError errorWithDomain:NSLocalizedDescriptionKey
                                                   code:NSURLErrorNetworkConnectionLost
                                               userInfo:@{ NSLocalizedDescriptionKey : @"Network not available."}];
-            failure(reqeust,nil,error);
+            failure(request,nil,error);
         }
         return nil;
     }
     
-    if(reqeust.ext.sessionManagerInterceptor){
+    if(request.ext.sessionManagerInterceptor){
         //Session Manager拦截器
-        reqeust.ext.sessionManagerInterceptor(manager, reqeust);
+        request.ext.sessionManagerInterceptor(manager, request);
     }else if(_globalSessionManagerInterceptor){
         //Session Manager拦截器(全局)
-        manager = _globalSessionManagerInterceptor(manager,reqeust);
+        manager = _globalSessionManagerInterceptor(manager,request);
     }
     
-    if(reqeust.ext.requestInterceptor){
+    if(request.ext.requestInterceptor){
         //请求拦截器
-        reqeust.ext.requestInterceptor(reqeust);
+        request.ext.requestInterceptor(manager,request);
     }else if(_globalRequestInterceptor){
         //请求拦截器(全局)
-        _globalRequestInterceptor(reqeust);
+        _globalRequestInterceptor(manager,request);
     }
     
     NSString * method = nil;
-    switch (reqeust.method) {
+    switch (request.method) {
         case ATHttpMethodGet:
             method = @"GET";
             break;
@@ -174,39 +183,60 @@ static ATHttpFailureInterceptor _globalFailureInterceptor = nil;
     }
     if(method){
         NSURLSessionDataTask *dataTask = [manager dataTaskWithHTTPMethod:method
-                                                               URLString:reqeust.requestUrl
-                                                              parameters:reqeust.params
-                                                                 headers:reqeust.headers
+                                                               URLString:request.requestUrl
+                                                              parameters:request.params
+                                                                 headers:request.headers
                                                           uploadProgress:uploadProgress
                                                         downloadProgress:downloadProgress
                                                                  success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
             [manager.session finishTasksAndInvalidate];
+            //响应拦截器(全局)
+            if(_globalResponseInterceptor){
+                _globalResponseInterceptor(request,task,responseObject,nil);
+            }
+            
             //请求成功拦截器
-            if(reqeust.ext.successInterceptor){
-                reqeust.ext.successInterceptor(reqeust, task, responseObject, success, failure);
+            if(request.ext.successInterceptor){
+                request.ext.successInterceptor(request, task, responseObject, success, failure);
                 return;
             }
             //请求成功拦截器(全局)
             if(_globalSuccessInterceptor){
-                _globalSuccessInterceptor(reqeust,task,responseObject,success,failure);
+                _globalSuccessInterceptor(request,task,responseObject,success,failure);
                 return;
             }
             //无拦截器
-            success(reqeust,task,responseObject);
+            success(request,task,responseObject);
             
         } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
             [manager.session finishTasksAndInvalidate];
+            
+            //判断能不能继续
+            if([request canSendRequest]){
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                    [ATHttpClient sendRequest:request
+                               uploadProgress:uploadProgress
+                             downloadProgress:downloadProgress
+                                      success:success
+                                      failure:failure];
+                });
+                return;
+            }
+            //响应拦截器(全局)
+            if(_globalResponseInterceptor){
+                _globalResponseInterceptor(request,task,nil,error);
+            }
             //请求成功拦截器
-            if(reqeust.ext.failureInterceptor){
-                reqeust.ext.failureInterceptor(reqeust, task, error, uploadProgress, downloadProgress, success, failure);
+            if(request.ext.failureInterceptor){
+                request.ext.failureInterceptor(request, task, error, success, failure);
                 return;
             }
             //请求失败拦截器(全局)
             if(_globalFailureInterceptor){
-                _globalFailureInterceptor(reqeust,task,error,uploadProgress,downloadProgress,success,failure);
+                _globalFailureInterceptor(request,task,error,success,failure);
                 return;
             }
-            failure(reqeust,task,error);
+            failure(request,task,error);
         }];
         [dataTask resume];
         return dataTask;

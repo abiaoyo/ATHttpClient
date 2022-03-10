@@ -9,6 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic,copy,class,readwrite) ATHttpSessionManagerInterceptor globalSessionManagerInterceptor;
 @property (nonatomic,copy,class,readwrite) ATHttpRequestInterceptor globalRequestInterceptor;
+@property (nonatomic,copy,class,readwrite) ATHttpResponseInterceptor globalResponseInterceptor;
 @property (nonatomic,copy,class,readwrite) ATHttpSuccessInterceptor globalSuccessInterceptor;
 @property (nonatomic,copy,class,readwrite) ATHttpFailureInterceptor globalFailureInterceptor;
 
@@ -16,11 +17,11 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)coverterNetworkStatus:(AFNetworkReachabilityStatus)status;
 + (AFNetworkReachabilityStatus)networkStatus;
 
-+ (NSURLSessionDataTask * _Nullable)sendRequest:(ATHttpRequest *)reqeust
++ (NSURLSessionDataTask * _Nullable)sendRequest:(ATHttpRequest *)request
                                         success:(ATHttpRequestSuccess _Nullable)success
                                         failure:(ATHttpRequestFailure _Nullable)failure;
 
-+ (NSURLSessionDataTask * _Nullable)sendRequest:(ATHttpRequest *)reqeust
++ (NSURLSessionDataTask * _Nullable)sendRequest:(ATHttpRequest *)request
                                  uploadProgress:(ATHttpUploadProgress _Nullable)uploadProgress
                                downloadProgress:(ATHttpDownloadProgress _Nullable)downloadProgress
                                         success:(ATHttpRequestSuccess _Nullable)success
