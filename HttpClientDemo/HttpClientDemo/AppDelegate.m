@@ -35,7 +35,7 @@
                                                 id  _Nullable response,
                                                 ATHttpRequestSuccess  _Nullable success,
                                                 ATHttpRequestFailure  _Nullable failure) {
-        NSLog(@"全局成功拦截器: %@\n",request.requestInfoExt);
+//        NSLog(@"全局成功拦截器: %@\n",request.requestInfoExt);
         NSHTTPURLResponse * httpResponse = (NSHTTPURLResponse *)task.response;
         NSDictionary * formatResponse = @{
             @"statusCode":@(httpResponse.statusCode),
@@ -51,7 +51,7 @@
                                                 NSError * _Nullable error,
                                                 ATHttpRequestSuccess  _Nullable success,
                                                 ATHttpRequestFailure  _Nullable failure) {
-        NSLog(@"全局失败拦截器: %@\n.error:%@\n",request.requestInfoExt,error.localizedDescription);
+//        NSLog(@"全局失败拦截器: %@\n.error:%@\n",request.requestInfoExt,error.localizedDescription);
     }];
     
     return YES;
