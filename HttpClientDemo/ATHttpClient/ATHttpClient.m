@@ -1,6 +1,7 @@
 #import "ATHttpClient.h"
 
 static ATHttpSessionManagerInterceptor _globalSessionManagerInterceptor = nil;
+static ATHttpRequestRetryInterceptor _globalRequestWillRetryInterceptor = nil;
 static ATHttpRequestInterceptor _globalRequestInterceptor = nil;
 static ATHttpResponseInterceptor _globalResponseInterceptor = nil;
 static ATHttpSuccessInterceptor _globalSuccessInterceptor = nil;
@@ -14,6 +15,14 @@ static ATHttpFailureInterceptor _globalFailureInterceptor = nil;
 }
 + (void)setGlobalSessionManagerInterceptor:(ATHttpSessionManagerInterceptor)globalSessionManagerInterceptor{
     _globalSessionManagerInterceptor = [globalSessionManagerInterceptor copy];
+}
+
++ (ATHttpRequestRetryInterceptor)globalRequestWillRetryInterceptor{
+    return _globalRequestWillRetryInterceptor;
+}
+
++ (void)setGlobalRequestWillRetryInterceptor:(ATHttpRequestRetryInterceptor)globalRequestWillRetryInterceptor{
+    _globalRequestWillRetryInterceptor = [globalRequestWillRetryInterceptor copy];
 }
 
 + (ATHttpRequestInterceptor)globalRequestInterceptor{
@@ -129,18 +138,7 @@ static ATHttpFailureInterceptor _globalFailureInterceptor = nil;
     //减少重试次数
     [request incrTryTimes];
     
-    //网络状态拦截
-//    AFNetworkReachabilityStatus networkStatus = AFNetworkReachabilityManager.sharedManager.networkReachabilityStatus;
-//
-//    if(![@[@(AFNetworkReachabilityStatusReachableViaWWAN),@(AFNetworkReachabilityStatusReachableViaWiFi)] containsObject:@(networkStatus)]){
-//        if(failure){
-//            NSError * error = [NSError errorWithDomain:NSLocalizedDescriptionKey
-//                                                  code:NSURLErrorNetworkConnectionLost
-//                                              userInfo:@{ NSLocalizedDescriptionKey : @"Network not available."}];
-//            failure(request,nil,error);
-//        }
-//        return nil;
-//    }
+    //请求头处理
     [request.headers enumerateKeysAndObjectsUsingBlock:^(NSString *  _Nonnull key, NSString *  _Nonnull obj, BOOL * _Nonnull stop) {
         [manager.requestSerializer setValue:obj forHTTPHeaderField:key];
     }];
@@ -195,7 +193,7 @@ static ATHttpFailureInterceptor _globalFailureInterceptor = nil;
             [manager.session finishTasksAndInvalidate];
             //响应拦截器(全局)
             if(_globalResponseInterceptor){
-                _globalResponseInterceptor(request,task,responseObject,nil);
+                _globalResponseInterceptor(request,task,responseObject,YES,nil);
             }
             
             //请求成功拦截器
@@ -217,6 +215,9 @@ static ATHttpFailureInterceptor _globalFailureInterceptor = nil;
             //判断能不能继续
             if([request canSendRequest]){
                 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                    if(_globalRequestWillRetryInterceptor){
+                        _globalRequestWillRetryInterceptor(request);
+                    }
                     [ATHttpClient sendRequest:request
                                uploadProgress:uploadProgress
                              downloadProgress:downloadProgress
@@ -227,7 +228,7 @@ static ATHttpFailureInterceptor _globalFailureInterceptor = nil;
             }
             //响应拦截器(全局)
             if(_globalResponseInterceptor){
-                _globalResponseInterceptor(request,task,nil,error);
+                _globalResponseInterceptor(request,task,nil,NO,error);
             }
             //请求成功拦截器
             if(request.ext.failureInterceptor){
@@ -239,6 +240,7 @@ static ATHttpFailureInterceptor _globalFailureInterceptor = nil;
                 _globalFailureInterceptor(request,task,error,success,failure);
                 return;
             }
+            //无拦截器
             failure(request,task,error);
         }];
         [dataTask resume];

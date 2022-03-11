@@ -8,6 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface ATHttpClient : NSObject
 
 @property (nonatomic,copy,class,readwrite) ATHttpSessionManagerInterceptor globalSessionManagerInterceptor;
+@property (nonatomic,copy,class,readwrite) ATHttpRequestRetryInterceptor globalRequestWillRetryInterceptor;
 @property (nonatomic,copy,class,readwrite) ATHttpRequestInterceptor globalRequestInterceptor;
 @property (nonatomic,copy,class,readwrite) ATHttpResponseInterceptor globalResponseInterceptor;
 @property (nonatomic,copy,class,readwrite) ATHttpSuccessInterceptor globalSuccessInterceptor;

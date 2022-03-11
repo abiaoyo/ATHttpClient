@@ -8,22 +8,33 @@
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    // Override point for customization after application launch.
+    
     [ATHttpClient startNetworkMonitoring:^(AFNetworkReachabilityStatus status) {
         ATHttpClientPrint(@"网络状态: %@",[ATHttpClient coverterNetworkStatus:status]);
     }];
     
+    //全局请求拦截器 - 这里可以处理请求头加字段（权限，信息等），可以用于处理请求日志
     [ATHttpClient setGlobalRequestInterceptor:^(AFHTTPSessionManager * _Nonnull manager, ATHttpRequest * _Nonnull request) {
         [manager.requestSerializer setValue:@"123456789" forHTTPHeaderField:@"token"];
         ATHttpClientPrint(@"全局请求拦截器: %@\n.requestHeaders:%@\n",request.requestInfoExt,[manager.requestSerializer HTTPRequestHeaders]);
     }];
+    //全局请求即将重试拦截器 - 这里可以用于处理切换服务器地址
+    [ATHttpClient setGlobalRequestWillRetryInterceptor:^(ATHttpRequest * _Nonnull request) {
+        if([request.baseUrl isEqualToString:@"https://www.tianqiapi.com"]){
+            request.baseUrl = @"https://www.tianqiapi_h222.com";
+        }
+    }];
+    //全局响应拦截器 - 这里可以用于处理响应日志
     [ATHttpClient setGlobalResponseInterceptor:^(ATHttpRequest * _Nonnull request,
                                                  NSURLSessionDataTask * _Nullable task,
                                                  id  _Nullable response,
+                                                 BOOL reqSuccess,
                                                  NSError * _Nullable error) {
         NSDictionary * respHeader = ((NSHTTPURLResponse *)task.response).allHeaderFields;
-        ATHttpClientPrint(@"全局响应拦截器: %@\n.responseHeaders: %@\n.response: %@\n",request.requestInfoExt,respHeader,response);
+        ATHttpClientPrint(@"全局响应拦截器: %@\n.reqSuccess:%@\n.responseHeaders: %@\n.response: %@\n",request.requestInfoExt,@(reqSuccess),respHeader,response);
     }];
+    
+    //全局请求成功拦截器 - 这里可以用于处理数据格式的转换
     [ATHttpClient setGlobalSuccessInterceptor:^(ATHttpRequest * _Nonnull request,
                                                 NSURLSessionDataTask * _Nullable task,
                                                 id  _Nullable response,
@@ -40,6 +51,8 @@
             success(request,task,formatResponse);
         }
     }];
+    
+    //全局请求失败拦截器 - 这里可以用于处理数据格式的转换
     [ATHttpClient setGlobalFailureInterceptor:^(ATHttpRequest * _Nonnull request,
                                                 NSURLSessionDataTask * _Nullable task,
                                                 NSError * _Nullable error,
