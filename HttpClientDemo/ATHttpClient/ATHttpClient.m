@@ -130,17 +130,20 @@ static ATHttpFailureInterceptor _globalFailureInterceptor = nil;
     [request incrTryTimes];
     
     //网络状态拦截
-    AFNetworkReachabilityStatus networkStatus = AFNetworkReachabilityManager.sharedManager.networkReachabilityStatus;
-    
-    if(![@[@(AFNetworkReachabilityStatusReachableViaWWAN),@(AFNetworkReachabilityStatusReachableViaWiFi)] containsObject:@(networkStatus)]){
-        if(failure){
-            NSError * error = [NSError errorWithDomain:NSLocalizedDescriptionKey
-                                                  code:NSURLErrorNetworkConnectionLost
-                                              userInfo:@{ NSLocalizedDescriptionKey : @"Network not available."}];
-            failure(request,nil,error);
-        }
-        return nil;
-    }
+//    AFNetworkReachabilityStatus networkStatus = AFNetworkReachabilityManager.sharedManager.networkReachabilityStatus;
+//
+//    if(![@[@(AFNetworkReachabilityStatusReachableViaWWAN),@(AFNetworkReachabilityStatusReachableViaWiFi)] containsObject:@(networkStatus)]){
+//        if(failure){
+//            NSError * error = [NSError errorWithDomain:NSLocalizedDescriptionKey
+//                                                  code:NSURLErrorNetworkConnectionLost
+//                                              userInfo:@{ NSLocalizedDescriptionKey : @"Network not available."}];
+//            failure(request,nil,error);
+//        }
+//        return nil;
+//    }
+    [request.headers enumerateKeysAndObjectsUsingBlock:^(NSString *  _Nonnull key, NSString *  _Nonnull obj, BOOL * _Nonnull stop) {
+        [manager.requestSerializer setValue:obj forHTTPHeaderField:key];
+    }];
     
     if(request.ext.sessionManagerInterceptor){
         //Session Manager拦截器

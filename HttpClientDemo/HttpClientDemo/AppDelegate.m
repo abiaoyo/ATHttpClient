@@ -1,10 +1,3 @@
-//
-//  AppDelegate.m
-//  HttpClientDemo
-//
-//  Created by 李叶彪 on 2022/3/8.
-//
-
 #import "AppDelegate.h"
 #import "ATHttpClient.h"
 @interface AppDelegate ()
@@ -17,18 +10,19 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
     [ATHttpClient startNetworkMonitoring:^(AFNetworkReachabilityStatus status) {
-        NSLog(@"网络状态: %@",[ATHttpClient coverterNetworkStatus:status]);
+        ATHttpClientPrint(@"网络状态: %@",[ATHttpClient coverterNetworkStatus:status]);
     }];
     
     [ATHttpClient setGlobalRequestInterceptor:^(AFHTTPSessionManager * _Nonnull manager, ATHttpRequest * _Nonnull request) {
-        NSLog(@"全局请求拦截器: %@\n.reqHeaders:%@\n",request.requestInfoExt,[manager.requestSerializer HTTPRequestHeaders]);
+        [manager.requestSerializer setValue:@"123456789" forHTTPHeaderField:@"token"];
+        ATHttpClientPrint(@"全局请求拦截器: %@\n.requestHeaders:%@\n",request.requestInfoExt,[manager.requestSerializer HTTPRequestHeaders]);
     }];
     [ATHttpClient setGlobalResponseInterceptor:^(ATHttpRequest * _Nonnull request,
                                                  NSURLSessionDataTask * _Nullable task,
                                                  id  _Nullable response,
                                                  NSError * _Nullable error) {
         NSDictionary * respHeader = ((NSHTTPURLResponse *)task.response).allHeaderFields;
-        NSLog(@"全局响应拦截器: %@\n.respHeaders: %@\n.response: %@\n",request.requestInfoExt,respHeader,response);
+        ATHttpClientPrint(@"全局响应拦截器: %@\n.responseHeaders: %@\n.response: %@\n",request.requestInfoExt,respHeader,response);
     }];
     [ATHttpClient setGlobalSuccessInterceptor:^(ATHttpRequest * _Nonnull request,
                                                 NSURLSessionDataTask * _Nullable task,
@@ -38,7 +32,7 @@
 //        NSLog(@"全局成功拦截器: %@\n",request.requestInfoExt);
         NSHTTPURLResponse * httpResponse = (NSHTTPURLResponse *)task.response;
         NSDictionary * formatResponse = @{
-            @"statusCode":@(httpResponse.statusCode),
+            @"code":@(httpResponse.statusCode),
             @"message":@"",
             @"data":response
         };

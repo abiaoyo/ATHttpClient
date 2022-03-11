@@ -4,6 +4,12 @@
 #import <Foundation/Foundation.h>
 #import <AFNetworking/AFNetworking.h>
 
+#ifdef DEBUG
+#define ATHttpClientPrint(format, ...) printf("-- (ATHttpClientPrint🍄) %s:(%d) --   %s\n\n", [[[NSString stringWithUTF8String:__FILE__] lastPathComponent] UTF8String], __LINE__, [[NSString stringWithFormat:(format), ##__VA_ARGS__] UTF8String] )
+#else
+#define ATHttpClientPrint(format, ...)
+#endif
+
 typedef NS_ENUM(NSInteger,ATHttpMethod){
     ATHttpMethodGet = 0,
     ATHttpMethodPost,
