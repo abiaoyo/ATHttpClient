@@ -69,7 +69,21 @@
 }
 
 - (NSString *)requestUrl{
-    return [NSString stringWithFormat:@"%@%@",self.baseUrl,self.api];
+    return [NSString stringWithFormat:@"%@%@",self.safeBaseUrl,self.safeApi];
+}
+
+- (NSString *)safeBaseUrl{
+    if(self.baseUrl){
+        return self.baseUrl;
+    }
+    return @"";
+}
+
+- (NSString *)safeApi{
+    if(self.api){
+        return self.api;
+    }
+    return @"";
 }
 
 - (NSString *)methodName{
@@ -106,11 +120,11 @@
 }
 
 - (NSString *)requestInfo{
-    return [NSString stringWithFormat:@"\n.url = %@\n.method = %@\n.headers = %@\n.params = %@",self.requestUrl,self.methodName,self.headers,self.params];
+    return [NSString stringWithFormat:@"\n.baseUrl = %@\n.api = %@\n.method = %@\n.headers = %@\n.params = %@",self.safeBaseUrl,self.safeApi,self.methodName,self.headers,self.params];
 }
 
 - (NSString *)requestInfoExt{
-    return [NSString stringWithFormat:@" \n.name = %@\n.tryTimes = %@\n.tryCount = %@\n.url = %@\n.method = %@\n.headers = %@\n.params = %@",self.ext.name,@(self.ext.tryTimes),@(self.ext.tryCount),self.requestUrl,self.methodName,self.headers,self.params];
+    return [NSString stringWithFormat:@" \n.name = %@\n.tryTimes = %@\n.tryCount = %@\n.baseUrl = %@\n.api = %@\n.method = %@\n.headers = %@\n.params = %@",self.ext.name,@(self.ext.tryTimes),@(self.ext.tryCount),self.safeBaseUrl,self.safeApi,self.methodName,self.headers,self.params];
 }
 
 

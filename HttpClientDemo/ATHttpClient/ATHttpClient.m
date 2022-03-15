@@ -191,9 +191,14 @@ static ATHttpFailureInterceptor _globalFailureInterceptor = nil;
                                                         downloadProgress:downloadProgress
                                                                  success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
             [manager.session finishTasksAndInvalidate];
+            
             //响应拦截器(全局)
+            BOOL canContinue = YES;
             if(_globalResponseInterceptor){
-                _globalResponseInterceptor(request,task,responseObject,YES,nil);
+                _globalResponseInterceptor(request,task,responseObject,YES,nil,&canContinue);
+            }
+            if(!canContinue){
+                return;
             }
             
             //请求成功拦截器
@@ -227,8 +232,12 @@ static ATHttpFailureInterceptor _globalFailureInterceptor = nil;
                 return;
             }
             //响应拦截器(全局)
+            BOOL canContinue = YES;
             if(_globalResponseInterceptor){
-                _globalResponseInterceptor(request,task,nil,NO,error);
+                _globalResponseInterceptor(request,task,nil,NO,error,&canContinue);
+            }
+            if(!canContinue){
+                return;
             }
             //请求成功拦截器
             if(request.ext.failureInterceptor){

@@ -24,12 +24,13 @@
             request.baseUrl = @"https://www.tianqiapi_h222.com";
         }
     }];
-    //全局响应拦截器 - 这里可以用于处理响应日志
+    //全局响应拦截器 - 这里可以用于处理响应日志，登录权限判断等
     [ATHttpClient setGlobalResponseInterceptor:^(ATHttpRequest * _Nonnull request,
                                                  NSURLSessionDataTask * _Nullable task,
                                                  id  _Nullable response,
                                                  BOOL reqSuccess,
-                                                 NSError * _Nullable error) {
+                                                 NSError * _Nullable error,
+                                                 BOOL *canContinue) {
         NSDictionary * respHeader = ((NSHTTPURLResponse *)task.response).allHeaderFields;
         ATHttpClientPrint(@"全局响应拦截器: %@\n.reqSuccess:%@\n.responseHeaders: %@\n.response: %@\n",request.requestInfoExt,@(reqSuccess),respHeader,response);
     }];
