@@ -36,6 +36,7 @@ typedef void (^ATHttpRequestInterceptor)(AFHTTPSessionManager * _Nonnull manager
 typedef BOOL (^ATHttpResponseInterceptor)(ATHttpRequest * _Nonnull request,
                                           NSURLSessionDataTask * _Nullable task,
                                           id _Nullable response,
+                                          NSDictionary * _Nullable reqHeaders,
                                           BOOL reqSuccess,
                                           NSError * _Nullable error);
 typedef void (^ATHttpRequestRetryInterceptor)(ATHttpRequest * _Nonnull request);

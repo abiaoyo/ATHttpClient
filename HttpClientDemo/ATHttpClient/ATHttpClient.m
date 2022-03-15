@@ -138,11 +138,6 @@ static ATHttpFailureInterceptor _globalFailureInterceptor = nil;
     //减少重试次数
     [request incrTryTimes];
     
-    //请求头处理
-    [request.headers enumerateKeysAndObjectsUsingBlock:^(NSString *  _Nonnull key, NSString *  _Nonnull obj, BOOL * _Nonnull stop) {
-        [manager.requestSerializer setValue:obj forHTTPHeaderField:key];
-    }];
-    
     if(request.ext.sessionManagerInterceptor){
         //Session Manager拦截器
         request.ext.sessionManagerInterceptor(manager, request);
@@ -158,6 +153,12 @@ static ATHttpFailureInterceptor _globalFailureInterceptor = nil;
         //请求拦截器(全局)
         _globalRequestInterceptor(manager,request);
     }
+    //请求头处理
+    [request.headers enumerateKeysAndObjectsUsingBlock:^(NSString *  _Nonnull key, NSString *  _Nonnull obj, BOOL * _Nonnull stop) {
+        [manager.requestSerializer setValue:obj forHTTPHeaderField:key];
+    }];
+    //合并请求头
+    NSDictionary * reqHeaders = [NSDictionary dictionaryWithDictionary:[manager.requestSerializer HTTPRequestHeaders]];
     
     NSString * method = nil;
     switch (request.method) {
@@ -195,7 +196,7 @@ static ATHttpFailureInterceptor _globalFailureInterceptor = nil;
             //响应拦截器(全局)
             BOOL canContinue = YES;
             if(_globalResponseInterceptor){
-                canContinue = _globalResponseInterceptor(request,task,responseObject,YES,nil);
+                canContinue = _globalResponseInterceptor(request,task,responseObject,reqHeaders,YES,nil);
             }
             if(!canContinue){
                 return;
@@ -234,7 +235,7 @@ static ATHttpFailureInterceptor _globalFailureInterceptor = nil;
             //响应拦截器(全局)
             BOOL canContinue = YES;
             if(_globalResponseInterceptor){
-                canContinue = _globalResponseInterceptor(request,task,nil,NO,error);
+                canContinue = _globalResponseInterceptor(request,task,nil,reqHeaders,NO,error);
             }
             if(!canContinue){
                 return;

@@ -16,7 +16,7 @@
     //全局请求拦截器 - 这里可以处理请求头加字段（权限，信息等），可以用于处理请求日志
     [ATHttpClient setGlobalRequestInterceptor:^(AFHTTPSessionManager * _Nonnull manager, ATHttpRequest * _Nonnull request) {
         [manager.requestSerializer setValue:@"123456789" forHTTPHeaderField:@"token"];
-        ATHttpClientPrint(@"全局请求拦截器: %@\n.requestHeaders:%@\n",request.requestInfoExt,[manager.requestSerializer HTTPRequestHeaders]);
+        ATHttpClientPrint(@"全局请求拦截器: %@\n.reqHeaders:%@\n",request.requestInfoExt,[manager.requestSerializer HTTPRequestHeaders]);
     }];
     //全局请求即将重试拦截器 - 这里可以用于处理切换服务器地址
     [ATHttpClient setGlobalRequestWillRetryInterceptor:^(ATHttpRequest * _Nonnull request) {
@@ -26,9 +26,14 @@
     }];
     //全局响应拦截器 - 这里可以用于处理响应日志，登录权限判断等
     //return : 返回能不能继续，  NO:表示不能继续请求逻辑   YES:表示继续请求逻辑;  例：如果登录 token 失效，则 return NO;
-    [ATHttpClient setGlobalResponseInterceptor:^BOOL(ATHttpRequest * _Nonnull request, NSURLSessionDataTask * _Nullable task, id  _Nullable response, BOOL reqSuccess, NSError * _Nullable error) {
+    [ATHttpClient setGlobalResponseInterceptor:^BOOL(ATHttpRequest * _Nonnull request,
+                                                     NSURLSessionDataTask * _Nullable task,
+                                                     id  _Nullable response,
+                                                     NSDictionary * _Nullable reqHeaders,
+                                                     BOOL reqSuccess,
+                                                     NSError * _Nullable error) {
         NSDictionary * respHeader = ((NSHTTPURLResponse *)task.response).allHeaderFields;
-        ATHttpClientPrint(@"全局响应拦截器: %@\n.reqSuccess:%@\n.responseHeaders: %@\n.response: %@\n",request.requestInfoExt,@(reqSuccess),respHeader,response);
+        ATHttpClientPrint(@"全局响应拦截器: %@\n.reqSuccess:%@\n.reqHeaders:%@\n.respHeaders: %@\n.response: %@\n",request.requestInfoExt,@(reqSuccess),reqHeaders,respHeader,response);
         return YES;
     }];
     
