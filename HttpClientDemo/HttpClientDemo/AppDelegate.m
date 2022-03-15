@@ -25,14 +25,11 @@
         }
     }];
     //全局响应拦截器 - 这里可以用于处理响应日志，登录权限判断等
-    [ATHttpClient setGlobalResponseInterceptor:^(ATHttpRequest * _Nonnull request,
-                                                 NSURLSessionDataTask * _Nullable task,
-                                                 id  _Nullable response,
-                                                 BOOL reqSuccess,
-                                                 NSError * _Nullable error,
-                                                 BOOL *canContinue) {
+    //return : 返回能不能继续，  NO:表示不能继续请求逻辑   YES:表示继续请求逻辑;  例：如果登录 token 失效，则 return NO;
+    [ATHttpClient setGlobalResponseInterceptor:^BOOL(ATHttpRequest * _Nonnull request, NSURLSessionDataTask * _Nullable task, id  _Nullable response, BOOL reqSuccess, NSError * _Nullable error) {
         NSDictionary * respHeader = ((NSHTTPURLResponse *)task.response).allHeaderFields;
         ATHttpClientPrint(@"全局响应拦截器: %@\n.reqSuccess:%@\n.responseHeaders: %@\n.response: %@\n",request.requestInfoExt,@(reqSuccess),respHeader,response);
+        return YES;
     }];
     
     //全局请求成功拦截器 - 这里可以用于处理数据格式的转换

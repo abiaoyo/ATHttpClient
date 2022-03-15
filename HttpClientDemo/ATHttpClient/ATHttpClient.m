@@ -195,7 +195,7 @@ static ATHttpFailureInterceptor _globalFailureInterceptor = nil;
             //响应拦截器(全局)
             BOOL canContinue = YES;
             if(_globalResponseInterceptor){
-                _globalResponseInterceptor(request,task,responseObject,YES,nil,&canContinue);
+                canContinue = _globalResponseInterceptor(request,task,responseObject,YES,nil);
             }
             if(!canContinue){
                 return;
@@ -234,7 +234,7 @@ static ATHttpFailureInterceptor _globalFailureInterceptor = nil;
             //响应拦截器(全局)
             BOOL canContinue = YES;
             if(_globalResponseInterceptor){
-                _globalResponseInterceptor(request,task,nil,NO,error,&canContinue);
+                canContinue = _globalResponseInterceptor(request,task,nil,NO,error);
             }
             if(!canContinue){
                 return;

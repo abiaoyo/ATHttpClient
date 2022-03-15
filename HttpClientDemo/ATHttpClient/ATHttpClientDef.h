@@ -33,12 +33,11 @@ typedef void (^ATHttpDownloadProgress)(NSProgress * _Nullable downloadProgress);
 typedef AFHTTPSessionManager * _Nonnull (^ATHttpSessionManagerInterceptor)(AFHTTPSessionManager * _Nonnull manager, ATHttpRequest * _Nonnull request);
 typedef void (^ATHttpRequestInterceptor)(AFHTTPSessionManager * _Nonnull manager,
                                          ATHttpRequest * _Nonnull request);
-typedef void (^ATHttpResponseInterceptor)(ATHttpRequest * _Nonnull request,
+typedef BOOL (^ATHttpResponseInterceptor)(ATHttpRequest * _Nonnull request,
                                           NSURLSessionDataTask * _Nullable task,
                                           id _Nullable response,
                                           BOOL reqSuccess,
-                                          NSError * _Nullable error,
-                                          BOOL * canContinue);
+                                          NSError * _Nullable error);
 typedef void (^ATHttpRequestRetryInterceptor)(ATHttpRequest * _Nonnull request);
 
 typedef void (^ATHttpSuccessInterceptor)(ATHttpRequest * _Nonnull request,
