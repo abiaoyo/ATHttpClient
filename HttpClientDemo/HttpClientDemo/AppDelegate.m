@@ -10,58 +10,37 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
     [ATHttpClient startNetworkMonitoring:^(AFNetworkReachabilityStatus status) {
-        ATHttpClientPrint(@"网络状态: %@",[ATHttpClient coverterNetworkStatus:status]);
+        ATHttpClientPrint(@"网络状态: %@",[ATHttpClient networkStatusStr:status]);
+    }];
+    
+    //这里处理manager
+    [ATHttpClient setGlobalSessionManagerInterceptor:^AFHTTPSessionManager * _Nonnull(AFHTTPSessionManager * _Nonnull manager, ATHttpRequest * _Nonnull req) {
+        NSLog(@"global session manager 拦截");
+        return manager;
     }];
     
     //全局请求拦截器 - 这里可以处理请求头加字段（权限，信息等），可以用于处理请求日志
-    [ATHttpClient setGlobalRequestInterceptor:^(AFHTTPSessionManager * _Nonnull manager, ATHttpRequest * _Nonnull request) {
+    [ATHttpClient setGlobalRequestInterceptor:^(AFHTTPSessionManager * _Nonnull manager, ATHttpRequest * _Nonnull req) {
         [manager.requestSerializer setValue:@"123456789" forHTTPHeaderField:@"token"];
-        ATHttpClientPrint(@"全局请求拦截器: %@\n.reqHeaders:%@\n",request.requestInfoExt,[manager.requestSerializer HTTPRequestHeaders]);
+        ATHttpClientPrint(@"全局请求拦截器: %@\n.reqHeaders:%@\n",req.requestInfoExt,[manager.requestSerializer HTTPRequestHeaders]);
     }];
     //全局请求即将重试拦截器 - 这里可以用于处理切换服务器地址
-    [ATHttpClient setGlobalRequestWillRetryInterceptor:^(ATHttpRequest * _Nonnull request) {
-        if([request.baseUrl isEqualToString:@"https://www.tianqiapi.com"]){
-            request.baseUrl = @"https://www.tianqiapi_h222.com";
+    [ATHttpClient setGlobalRequestRetryInterceptor:^(ATHttpRequest * _Nonnull req) {
+        if([req.baseUrl isEqualToString:@"https://www.tianqiapi.com"]){
+            req.baseUrl = @"https://www.tianqiapi_h222.com";
         }
     }];
     //全局响应拦截器 - 这里可以用于处理响应日志，登录权限判断等
     //return : 返回能不能继续，  NO:表示不能继续请求逻辑   YES:表示继续请求逻辑;  例：如果登录 token 失效，则 return NO;
-    [ATHttpClient setGlobalResponseInterceptor:^BOOL(ATHttpRequest * _Nonnull request,
-                                                     NSURLSessionDataTask * _Nullable task,
-                                                     id  _Nullable response,
-                                                     NSDictionary * _Nullable reqHeaders,
-                                                     BOOL reqSuccess,
-                                                     NSError * _Nullable error) {
+    [ATHttpClient setGlobalResponseSuccessInterceptor:^BOOL(ATHttpRequest * _Nonnull req, NSURLSessionDataTask * _Nullable task, id  _Nullable resp, NSError * _Nullable error) {
         NSDictionary * respHeader = ((NSHTTPURLResponse *)task.response).allHeaderFields;
-        ATHttpClientPrint(@"全局响应拦截器: %@\n.reqSuccess:%@\n.reqHeaders:%@\n.respHeaders: %@\n.response: %@\n",request.requestInfoExt,@(reqSuccess),reqHeaders,respHeader,response);
+        ATHttpClientPrint(@"success 全局响应拦截器: %@\n.reqHeaders:%@\n.respHeaders: %@\n.response: %@\n",req.requestInfoExt,task.currentRequest.allHTTPHeaderFields,respHeader,resp);
         return YES;
     }];
-    
-    //全局请求成功拦截器 - 这里可以用于处理数据格式的转换
-    [ATHttpClient setGlobalSuccessInterceptor:^(ATHttpRequest * _Nonnull request,
-                                                NSURLSessionDataTask * _Nullable task,
-                                                id  _Nullable response,
-                                                ATHttpRequestSuccess  _Nullable success,
-                                                ATHttpRequestFailure  _Nullable failure) {
-//        NSLog(@"全局成功拦截器: %@\n",request.requestInfoExt);
-        NSHTTPURLResponse * httpResponse = (NSHTTPURLResponse *)task.response;
-        NSDictionary * formatResponse = @{
-            @"code":@(httpResponse.statusCode),
-            @"message":@"",
-            @"data":response
-        };
-        if(success){
-            success(request,task,formatResponse);
-        }
-    }];
-    
-    //全局请求失败拦截器 - 这里可以用于处理数据格式的转换
-    [ATHttpClient setGlobalFailureInterceptor:^(ATHttpRequest * _Nonnull request,
-                                                NSURLSessionDataTask * _Nullable task,
-                                                NSError * _Nullable error,
-                                                ATHttpRequestSuccess  _Nullable success,
-                                                ATHttpRequestFailure  _Nullable failure) {
-//        NSLog(@"全局失败拦截器: %@\n.error:%@\n",request.requestInfoExt,error.localizedDescription);
+    [ATHttpClient setGlobalResponseFailureInterceptor:^BOOL(ATHttpRequest * _Nonnull req, NSURLSessionDataTask * _Nullable task, id  _Nullable resp, NSError * _Nullable error) {
+        NSDictionary * respHeader = ((NSHTTPURLResponse *)task.response).allHeaderFields;
+        ATHttpClientPrint(@"全局响应拦截器: %@\n.reqHeaders:%@\n.respHeaders: %@\n.response: %@\n",req.requestInfoExt,task.currentRequest.allHTTPHeaderFields,respHeader,resp);
+        return YES;
     }];
     
     return YES;

@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)incrTryTimes;
 
 - (NSString *)requestUrl;
-- (NSString *)methodName;
+- (NSString *)requestMethod;
 - (NSString *)requestInfo;
 - (NSString *)requestInfoExt;
 

@@ -8,25 +8,17 @@ NS_ASSUME_NONNULL_BEGIN
 @interface ATHttpClient : NSObject
 
 @property (nonatomic,copy,class,readwrite) ATHttpSessionManagerInterceptor globalSessionManagerInterceptor;
-@property (nonatomic,copy,class,readwrite) ATHttpRequestRetryInterceptor globalRequestWillRetryInterceptor;
+@property (nonatomic,copy,class,readwrite) ATHttpRequestRetryInterceptor globalRequestRetryInterceptor;
 @property (nonatomic,copy,class,readwrite) ATHttpRequestInterceptor globalRequestInterceptor;
-@property (nonatomic,copy,class,readwrite) ATHttpResponseInterceptor globalResponseInterceptor;
-@property (nonatomic,copy,class,readwrite) ATHttpSuccessInterceptor globalSuccessInterceptor;
-@property (nonatomic,copy,class,readwrite) ATHttpFailureInterceptor globalFailureInterceptor;
+@property (nonatomic,copy,class,readwrite) ATHttpResponseInterceptor globalResponseSuccessInterceptor;
+@property (nonatomic,copy,class,readwrite) ATHttpResponseInterceptor globalResponseFailureInterceptor;
+
+@property (nonatomic,assign,class,readonly) AFNetworkReachabilityStatus networkStatus;
 
 + (void)startNetworkMonitoring:(void (^)(AFNetworkReachabilityStatus status))monitoringBlock;
-+ (NSString *)coverterNetworkStatus:(AFNetworkReachabilityStatus)status;
-+ (AFNetworkReachabilityStatus)networkStatus;
++ (NSString *)networkStatusStr:(AFNetworkReachabilityStatus)status;
 
-+ (NSURLSessionDataTask * _Nullable)sendRequest:(ATHttpRequest *)request
-                                        success:(ATHttpRequestSuccess _Nullable)success
-                                        failure:(ATHttpRequestFailure _Nullable)failure;
-
-+ (NSURLSessionDataTask * _Nullable)sendRequest:(ATHttpRequest *)request
-                                 uploadProgress:(ATHttpUploadProgress _Nullable)uploadProgress
-                               downloadProgress:(ATHttpDownloadProgress _Nullable)downloadProgress
-                                        success:(ATHttpRequestSuccess _Nullable)success
-                                        failure:(ATHttpRequestFailure _Nullable)failure;
++ (NSURLSessionDataTask * _Nullable)sendRequest:(ATHttpRequest *)request;
 
 @end
 

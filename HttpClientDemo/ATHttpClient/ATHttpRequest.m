@@ -72,26 +72,8 @@
     return [NSString stringWithFormat:@"%@%@",self.safeBaseUrl,self.safeApi];
 }
 
-- (NSString *)safeBaseUrl{
-    if(self.baseUrl){
-        return self.baseUrl;
-    }
-    return @"";
-}
-
-- (NSString *)safeApi{
-    if(self.api){
-        return self.api;
-    }
-    return @"";
-}
-
-- (NSString *)methodName{
+- (NSString *)requestMethod{
     switch (self.method) {
-        case ATHttpMethodGet:{
-            return @"GET";
-        }
-            break;
         case ATHttpMethodPost:{
             return @"POST";
         }
@@ -112,19 +94,33 @@
             return @"PATCH";
         }
             break;
-            
+        case ATHttpMethodGet:
         default:
+            return @"GET";
             break;
+    }
+}
+
+- (NSString *)safeBaseUrl{
+    if(self.baseUrl){
+        return self.baseUrl;
+    }
+    return @"";
+}
+
+- (NSString *)safeApi{
+    if(self.api){
+        return self.api;
     }
     return @"";
 }
 
 - (NSString *)requestInfo{
-    return [NSString stringWithFormat:@"\n.baseUrl = %@\n.api = %@\n.method = %@\n.headers = %@\n.params = %@",self.safeBaseUrl,self.safeApi,self.methodName,self.headers,self.params];
+    return [NSString stringWithFormat:@"\n.baseUrl = %@\n.api = %@\n.method = %@\n.headers = %@\n.params = %@",self.safeBaseUrl,self.safeApi,self.requestMethod,self.headers,self.params];
 }
 
 - (NSString *)requestInfoExt{
-    return [NSString stringWithFormat:@" \n.name = %@\n.tryTimes = %@\n.tryCount = %@\n.baseUrl = %@\n.api = %@\n.method = %@\n.headers = %@\n.params = %@",self.ext.name,@(self.ext.tryTimes),@(self.ext.tryCount),self.safeBaseUrl,self.safeApi,self.methodName,self.headers,self.params];
+    return [NSString stringWithFormat:@" \n.name = %@\n.tryTimes = %@\n.tryCount = %@\n.baseUrl = %@\n.api = %@\n.method = %@\n.headers = %@\n.params = %@",self.ext.name,@(self.ext.tryTimes),@(self.ext.tryCount),self.safeBaseUrl,self.safeApi,self.requestMethod,self.headers,self.params];
 }
 
 
