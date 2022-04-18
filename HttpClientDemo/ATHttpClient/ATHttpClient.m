@@ -52,11 +52,11 @@
         request.baseUrl = self.baseUrlsManager.currentUrl;
     }
     //判断是否能请求
-    if(![request canSendRequest]){
+    if(![request.ext canSendRequest]){
         return nil;
     }
     //减少重试次数
-    [request incrTryTimes];
+    [request.ext incrTryTimes];
     
     //Session Manager拦截器(全局)
     if(_globalSessionManagerInterceptor && !request.ext.disableSessionManagerInterceptor){
@@ -114,7 +114,7 @@
         [manager.session finishTasksAndInvalidate];
         
         //判断能不能继续
-        if([request canSendRequest]){
+        if([request.ext canSendRequest]){
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                 if(weakself.globalRequestRetryInterceptor && !request.ext.disableRequestRetryInterceptor){
                     weakself.globalRequestRetryInterceptor(request);

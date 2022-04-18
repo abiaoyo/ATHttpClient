@@ -60,15 +60,6 @@
     return request;
 }
 
-
-- (BOOL)canSendRequest{
-    return self.ext.tryTimes < self.ext.tryCount;
-}
-
-- (void)incrTryTimes{
-    self.ext.tryTimes += 1;
-}
-
 - (NSString *)requestUrl{
     return [NSString stringWithFormat:@"%@%@",self.safeBaseUrl,self.safeApi];
 }

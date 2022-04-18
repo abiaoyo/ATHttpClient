@@ -23,9 +23,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (ATHttpRequest *)headRequest;
 + (ATHttpRequest *)patchRequest;
 
-- (BOOL)canSendRequest;
-- (void)incrTryTimes;
-
 - (NSString *)requestUrl;
 - (NSString *)requestMethod;
 - (NSString *)requestInfo;

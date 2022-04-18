@@ -26,6 +26,9 @@ NS_ASSUME_NONNULL_BEGIN
 //JSONModel sub class
 @property (nonatomic,strong) Class jsonModelClass;
 
+- (BOOL)canSendRequest;
+- (void)incrTryTimes;
+
 @end
 
 NS_ASSUME_NONNULL_END
