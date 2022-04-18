@@ -155,7 +155,7 @@ static Class _jsonModelClass;
             }else if(_jsonModelClass){
                 respModel = [[_jsonModelClass alloc] initWithDictionary:responseObject error:nil];
             }
-            request.ext.jsonSuccess(request, task, respModel);
+            request.ext.jsonSuccess(request, task, responseObject, respModel);
         }
         if(request.ext.success){
             request.ext.success(request,task,responseObject);

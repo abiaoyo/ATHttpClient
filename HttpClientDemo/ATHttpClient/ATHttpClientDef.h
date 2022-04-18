@@ -28,6 +28,7 @@ typedef void (^ATHttpRequestSuccess)(ATHttpRequest * _Nonnull req,
 
 typedef void (^ATHttpRequestJSONSuccess)(ATHttpRequest * _Nonnull req,
                                         NSURLSessionDataTask * _Nullable task,
+                                         id _Nullable resp,
                                          JSONModel * _Nullable respModel);
 
 typedef void (^ATHttpRequestFailure)(ATHttpRequest * _Nonnull req,

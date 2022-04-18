@@ -37,7 +37,7 @@
     request.ext.name = @"测试接口";
     
     request.ext.tryCount = 2;
-    request.ext.jsonSuccess = ^(ATHttpRequest * _Nonnull req, NSURLSessionDataTask * _Nullable task, JSONModel * _Nullable respModel) {
+    request.ext.jsonSuccess = ^(ATHttpRequest * _Nonnull req, NSURLSessionDataTask * _Nullable task, id  _Nullable resp, JSONModel * _Nullable respModel) {
         ATHttpClientPrint(@"请求成功回调: %@\n.response:%@\n",req.requestInfoExt,respModel);
     };
     
@@ -77,7 +77,7 @@
     request.api = @"/v3/weather/weatherInfo?key=5d2d3e6c0d5188bec134fc4fc1b139e0&city=%E4%BB%99%E6%B8%B8&extensions=base";
     request.ext.name = @"登录接口";
     request.ext.jsonModelClass = TestJsonModel.class;
-    request.ext.jsonSuccess = ^(ATHttpRequest * _Nonnull req, NSURLSessionDataTask * _Nullable task, JSONModel * _Nullable respModel) {
+    request.ext.jsonSuccess = ^(ATHttpRequest * _Nonnull req, NSURLSessionDataTask * _Nullable task, id  _Nullable resp, JSONModel * _Nullable respModel) {
         ATHttpClientPrint(@"请求成功回调2: %@\n.response:%@\n",req.requestInfoExt,respModel);
     };
     request.ext.failure = ^(ATHttpRequest * _Nonnull req, NSURLSessionDataTask * _Nullable task, NSError * _Nullable error) {
