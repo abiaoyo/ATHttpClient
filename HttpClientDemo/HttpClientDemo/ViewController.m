@@ -32,7 +32,7 @@
 
 - (IBAction)clickButton1:(id)sender {
     ATHttpRequest * request = [ATHttpRequest getRequest];
-    request.baseUrl = @"https://www.tianqiapi.com";
+//    request.baseUrl = @"https://www.tianqiapi.com";
     request.api = @"/api?version=v6&appid=21375891&appsecret=fTYv7v5E&city=%E5%8D%97%E4%BA%AC";
     request.ext.name = @"测试接口";
     
@@ -47,7 +47,7 @@
     request.ext.failure = ^(ATHttpRequest * _Nonnull req, NSURLSessionDataTask * _Nullable task, NSError * _Nullable error) {
         ATHttpClientPrint(@"请求失败回调: %@\n.error:%@\n",req.requestInfoExt,error);
     };
-    [ATHttpClient sendRequest:request];
+    [ATHttpClient.client sendRequest:request];
 }
 
 - (IBAction)clickButton2:(id)sender {
@@ -68,7 +68,7 @@
         ATHttpClientPrint(@"请求失败回调: %@\n.error:%@\n",req.requestInfoExt,error);
     };
     //请求拦截器 - 会覆盖全局请求拦截器
-    [ATHttpClient sendRequest:request];
+    [ATHttpClient.client sendRequest:request];
 }
 
 - (IBAction)clickButton3:(id)sender {
@@ -84,7 +84,7 @@
         ATHttpClientPrint(@"请求失败回调: %@\n.error:%@\n",req.requestInfoExt, error);
     };
     
-    [ATHttpClient sendRequest:request];
+    [ATHttpClient.client sendRequest:request];
 }
 
 

@@ -1,6 +1,7 @@
 #import <Foundation/Foundation.h>
 #import "ATHttpClientDef.h"
 #import "ATHttpRequestExt.h"
+#import "ATHttpUrlManager.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

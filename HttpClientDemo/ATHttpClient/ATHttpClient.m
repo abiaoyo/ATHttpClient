@@ -1,86 +1,31 @@
 #import "ATHttpClient.h"
 
-static ATHttpSessionManagerInterceptor _globalSessionManagerInterceptor;
-static ATHttpRequestRetryInterceptor _globalRequestRetryInterceptor;
-static ATHttpRequestInterceptor _globalRequestInterceptor;
-static ATHttpResponseInterceptor _globalResponseSuccessInterceptor;
-static ATHttpResponseInterceptor _globalResponseFailureInterceptor;
-static Class _jsonModelClass;
+
+@interface ATHttpClient()
+@property (nonatomic,strong) ATHttpUrlManager * baseUrlsManager;
+@end
 
 @implementation ATHttpClient
 
-+ (Class)jsonModelClass{
-    return _jsonModelClass;
++ (ATHttpClient *)client{
+    static ATHttpClient * instance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        instance = [ATHttpClient new];
+    });
+    return instance;
 }
 
-+ (void)setJsonModelClass:(Class)jsonModelClass{
-    _jsonModelClass = jsonModelClass;
-}
-
-+ (ATHttpSessionManagerInterceptor)globalSessionManagerInterceptor{
-    return _globalSessionManagerInterceptor;
-}
-+ (void)setGlobalSessionManagerInterceptor:(ATHttpSessionManagerInterceptor)globalSessionManagerInterceptor{
-    _globalSessionManagerInterceptor = [globalSessionManagerInterceptor copy];
-}
-
-+ (ATHttpRequestRetryInterceptor)globalRequestRetryInterceptor{
-    return _globalRequestRetryInterceptor;
-}
-
-+ (void)setGlobalRequestRetryInterceptor:(ATHttpRequestRetryInterceptor)globalRequestRetryInterceptor{
-    _globalRequestRetryInterceptor = [globalRequestRetryInterceptor copy];
-}
-
-+ (ATHttpRequestInterceptor)globalRequestInterceptor{
-    return _globalRequestInterceptor;
-}
-+ (void)setGlobalRequestInterceptor:(ATHttpRequestInterceptor)globalRequestInterceptor{
-    _globalRequestInterceptor = [globalRequestInterceptor copy];
-}
-
-+ (ATHttpResponseInterceptor)globalResponseSuccessInterceptor{
-    return _globalResponseSuccessInterceptor;
-}
-+ (void)setGlobalResponseSuccessInterceptor:(ATHttpResponseInterceptor)globalResponseSuccessInterceptor{
-    _globalResponseSuccessInterceptor = [globalResponseSuccessInterceptor copy];
-}
-
-+ (ATHttpResponseInterceptor)globalResponseFailureInterceptor{
-    return _globalResponseFailureInterceptor;
-}
-+ (void)setGlobalResponseFailureInterceptor:(ATHttpResponseInterceptor)globalResponseFailureInterceptor{
-    _globalResponseFailureInterceptor = [globalResponseFailureInterceptor copy];
-}
-
-
-+ (void)startNetworkMonitoring:(void (^)(AFNetworkReachabilityStatus status))monitoringBlock{
+- (void)startNetworkMonitoring:(void (^)(AFNetworkReachabilityStatus status))monitoringBlock{
     [AFNetworkReachabilityManager.sharedManager setReachabilityStatusChangeBlock:monitoringBlock];
     [AFNetworkReachabilityManager.sharedManager startMonitoring];
 }
 
-+ (NSString *)networkStatusStr:(AFNetworkReachabilityStatus)status{
-    switch (status) {
-        case AFNetworkReachabilityStatusNotReachable:
-            return @"无网络";
-            break;
-        case AFNetworkReachabilityStatusReachableViaWWAN:
-            return @"移动网络";
-            break;
-        case AFNetworkReachabilityStatusReachableViaWiFi:
-            return @"WIFI";
-            break;
-        default:
-            return @"未知"; //AFNetworkReachabilityStatusUnknown
-            break;
-    }
-}
-
-+ (AFNetworkReachabilityStatus)networkStatus{
+- (AFNetworkReachabilityStatus)networkStatus{
     return AFNetworkReachabilityManager.sharedManager.networkReachabilityStatus;
 }
 
-+ (AFHTTPSessionManager *)defaultSessionManager{
+- (AFHTTPSessionManager *)defaultSessionManager{
     AFHTTPSessionManager * manager = [AFHTTPSessionManager manager];
     manager.requestSerializer = [AFJSONRequestSerializer serializer];
     manager.responseSerializer = [AFJSONResponseSerializer serializer];
@@ -96,13 +41,16 @@ static Class _jsonModelClass;
     return manager;
 }
 
-+ (NSURLSessionDataTask *)sendRequest:(ATHttpRequest *)request{
+- (NSURLSessionDataTask *)sendRequest:(ATHttpRequest *)request{
     AFHTTPSessionManager * manager = [self defaultSessionManager];
     return [self sendRequest:request manager:manager];
 }
 
-+ (NSURLSessionDataTask *)sendRequest:(ATHttpRequest *)request
+- (NSURLSessionDataTask *)sendRequest:(ATHttpRequest *)request
                               manager:(AFHTTPSessionManager *)manager{
+    if(request.baseUrl.length == 0){
+        request.baseUrl = self.baseUrlsManager.currentUrl;
+    }
     //判断是否能请求
     if(![request canSendRequest]){
         return nil;
@@ -130,6 +78,8 @@ static Class _jsonModelClass;
         [manager.requestSerializer setValue:obj forHTTPHeaderField:key];
     }];
     
+    
+    __weak typeof(self) weakself = self;
     NSURLSessionDataTask *dataTask = [manager dataTaskWithHTTPMethod:request.requestMethod
                                                            URLString:request.requestUrl
                                                           parameters:request.params
@@ -141,8 +91,8 @@ static Class _jsonModelClass;
         
         //响应拦截器(全局)
         BOOL canContinue = YES;
-        if(_globalResponseSuccessInterceptor && !request.ext.disableResponseSuccessInterceptor){
-            canContinue = _globalResponseSuccessInterceptor(request,task,responseObject,nil);
+        if(weakself.globalResponseSuccessInterceptor && !request.ext.disableResponseSuccessInterceptor){
+            canContinue = weakself.globalResponseSuccessInterceptor(request,task,responseObject,nil);
             if(!canContinue){
                 return;
             }
@@ -152,8 +102,8 @@ static Class _jsonModelClass;
             id respModel = nil;
             if(request.ext.jsonModelClass){
                 respModel = [[request.ext.jsonModelClass alloc] initWithDictionary:responseObject error:nil];
-            }else if(_jsonModelClass){
-                respModel = [[_jsonModelClass alloc] initWithDictionary:responseObject error:nil];
+            }else if(weakself.jsonModelClass){
+                respModel = [[weakself.jsonModelClass alloc] initWithDictionary:responseObject error:nil];
             }
             request.ext.jsonSuccess(request, task, responseObject, respModel);
         }
@@ -166,17 +116,17 @@ static Class _jsonModelClass;
         //判断能不能继续
         if([request canSendRequest]){
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                if(_globalRequestRetryInterceptor && !request.ext.disableRequestRetryInterceptor){
-                    _globalRequestRetryInterceptor(request);
+                if(weakself.globalRequestRetryInterceptor && !request.ext.disableRequestRetryInterceptor){
+                    weakself.globalRequestRetryInterceptor(request);
                 }
-                [ATHttpClient sendRequest:request];
+                [weakself sendRequest:request];
             });
             return;
         }
         //响应拦截器(全局)
         BOOL canContinue = YES;
-        if(_globalResponseFailureInterceptor && !request.ext.disableResponseFailureInterceptor){
-            canContinue = _globalResponseFailureInterceptor(request,task,nil,error);
+        if(weakself.globalResponseFailureInterceptor && !request.ext.disableResponseFailureInterceptor){
+            canContinue = weakself.globalResponseFailureInterceptor(request,task,nil,error);
             if(!canContinue){
                 return;
             }

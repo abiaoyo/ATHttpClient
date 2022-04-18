@@ -1,5 +1,6 @@
 #import "ATHttpRequest.h"
 #import <objc/runtime.h>
+#import "ATHttpClient.h"
 
 @interface ATHttpRequest()
 @property (nonatomic,strong) ATHttpRequestExt * ext;
@@ -102,8 +103,9 @@
 }
 
 - (NSString *)safeBaseUrl{
-    if(self.baseUrl){
-        return self.baseUrl;
+    NSString * baseUrl = self.baseUrl;
+    if(baseUrl){
+        return baseUrl;
     }
     return @"";
 }

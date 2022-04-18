@@ -7,21 +7,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ATHttpClient : NSObject
 
-@property (nonatomic,copy,class,readwrite) ATHttpSessionManagerInterceptor globalSessionManagerInterceptor;
-@property (nonatomic,copy,class,readwrite) ATHttpRequestRetryInterceptor globalRequestRetryInterceptor;
-@property (nonatomic,copy,class,readwrite) ATHttpRequestInterceptor globalRequestInterceptor;
-@property (nonatomic,copy,class,readwrite) ATHttpResponseInterceptor globalResponseSuccessInterceptor;
-@property (nonatomic,copy,class,readwrite) ATHttpResponseInterceptor globalResponseFailureInterceptor;
+@property (nonatomic,copy) ATHttpSessionManagerInterceptor globalSessionManagerInterceptor;
+@property (nonatomic,copy) ATHttpRequestRetryInterceptor globalRequestRetryInterceptor;
+@property (nonatomic,copy) ATHttpRequestInterceptor globalRequestInterceptor;
+@property (nonatomic,copy) ATHttpResponseInterceptor globalResponseSuccessInterceptor;
+@property (nonatomic,copy) ATHttpResponseInterceptor globalResponseFailureInterceptor;
 
-//JSONModel sub class
-@property (nonatomic,strong,class,readwrite) Class jsonModelClass;
+@property (nonatomic,strong,readonly) ATHttpUrlManager * baseUrlsManager;
+@property (nonatomic,assign,readonly) AFNetworkReachabilityStatus networkStatus;
+@property (nonatomic,strong) Class jsonModelClass;//JSONModel sub class
 
-@property (nonatomic,assign,class,readonly) AFNetworkReachabilityStatus networkStatus;
+- (void)startNetworkMonitoring:(void (^)(AFNetworkReachabilityStatus status))monitoringBlock;
 
-+ (void)startNetworkMonitoring:(void (^)(AFNetworkReachabilityStatus status))monitoringBlock;
-+ (NSString *)networkStatusStr:(AFNetworkReachabilityStatus)status;
+- (NSURLSessionDataTask * _Nullable)sendRequest:(ATHttpRequest *)request;
 
-+ (NSURLSessionDataTask * _Nullable)sendRequest:(ATHttpRequest *)request;
++ (ATHttpClient *)client;
+
 
 @end
 
