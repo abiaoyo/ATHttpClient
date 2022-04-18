@@ -35,8 +35,12 @@
     request.baseUrl = @"https://www.tianqiapi.com";
     request.api = @"/api?version=v6&appid=21375891&appsecret=fTYv7v5E&city=%E5%8D%97%E4%BA%AC";
     request.ext.name = @"测试接口";
+    
     request.ext.tryCount = 2;
-
+    request.ext.jsonSuccess = ^(ATHttpRequest * _Nonnull req, NSURLSessionDataTask * _Nullable task, JSONModel * _Nullable respModel) {
+        ATHttpClientPrint(@"请求成功回调: %@\n.response:%@\n",req.requestInfoExt,respModel);
+    };
+    
     request.ext.success = ^(ATHttpRequest * _Nonnull req, NSURLSessionDataTask * _Nullable task, id  _Nullable resp) {
         ATHttpClientPrint(@"请求成功回调: %@\n.response:%@\n",req.requestInfoExt,resp);
     };

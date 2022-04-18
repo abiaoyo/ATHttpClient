@@ -5,8 +5,17 @@ static ATHttpRequestRetryInterceptor _globalRequestRetryInterceptor;
 static ATHttpRequestInterceptor _globalRequestInterceptor;
 static ATHttpResponseInterceptor _globalResponseSuccessInterceptor;
 static ATHttpResponseInterceptor _globalResponseFailureInterceptor;
+static Class _jsonModelClass;
 
 @implementation ATHttpClient
+
++ (Class)jsonModelClass{
+    return _jsonModelClass;
+}
+
++ (void)setJsonModelClass:(Class)jsonModelClass{
+    _jsonModelClass = jsonModelClass;
+}
 
 + (ATHttpSessionManagerInterceptor)globalSessionManagerInterceptor{
     return _globalSessionManagerInterceptor;
@@ -140,7 +149,12 @@ static ATHttpResponseInterceptor _globalResponseFailureInterceptor;
         }
         //无拦截器
         if(request.ext.jsonSuccess){
-            id respModel = [[request.ext.jsonModelClass alloc] initWithDictionary:responseObject error:nil];
+            id respModel = nil;
+            if(request.ext.jsonModelClass){
+                respModel = [[request.ext.jsonModelClass alloc] initWithDictionary:responseObject error:nil];
+            }else if(_jsonModelClass){
+                respModel = [[_jsonModelClass alloc] initWithDictionary:responseObject error:nil];
+            }
             request.ext.jsonSuccess(request, task, respModel);
         }
         if(request.ext.success){

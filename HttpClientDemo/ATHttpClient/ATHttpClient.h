@@ -13,6 +13,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic,copy,class,readwrite) ATHttpResponseInterceptor globalResponseSuccessInterceptor;
 @property (nonatomic,copy,class,readwrite) ATHttpResponseInterceptor globalResponseFailureInterceptor;
 
+//JSONModel sub class
+@property (nonatomic,strong,class,readwrite) Class jsonModelClass;
+
 @property (nonatomic,assign,class,readonly) AFNetworkReachabilityStatus networkStatus;
 
 + (void)startNetworkMonitoring:(void (^)(AFNetworkReachabilityStatus status))monitoringBlock;

@@ -46,16 +46,4 @@ typedef BOOL (^ATHttpResponseInterceptor)(ATHttpRequest * _Nonnull req,NSURLSess
 
 typedef void (^ATHttpRequestRetryInterceptor)(ATHttpRequest * _Nonnull req);
 
-//typedef void (^ATHttpSuccessInterceptor)(ATHttpRequest * _Nonnull req,
-//                                                NSURLSessionDataTask * _Nullable task,
-//                                                id _Nullable resp,
-//                                                ATHttpRequestSuccess _Nullable success,
-//                                                ATHttpRequestFailure _Nullable failure);
-//
-//typedef void (^ATHttpFailureInterceptor)(ATHttpRequest * _Nonnull req,
-//                                                NSURLSessionDataTask * _Nullable task,
-//                                                NSError * _Nullable error,
-//                                                ATHttpRequestSuccess _Nullable success,
-//                                                ATHttpRequestFailure _Nullable failure);
-
 #endif /* ATHttpClientDef_h */

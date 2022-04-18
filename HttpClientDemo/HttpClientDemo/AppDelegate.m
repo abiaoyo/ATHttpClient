@@ -1,5 +1,21 @@
 #import "AppDelegate.h"
 #import "ATHttpClient.h"
+
+@interface API_ResponseModel : JSONModel
+@property (nonatomic,assign) NSInteger code;
+@property (nonatomic,copy) NSString * message;
+@property (nonatomic,copy) NSDictionary * data;
+@property (nonatomic,copy) NSString * info;
+@end
+
+@implementation API_ResponseModel
+
++ (BOOL)propertyIsOptional:(NSString *)propertyName {
+    return YES;
+}
+
+@end
+
 @interface AppDelegate ()
 
 @end
@@ -9,9 +25,19 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
+    BOOL b = [API_ResponseModel.class isKindOfClass:JSONModel.class];
+    BOOL b2 = [API_ResponseModel.class isMemberOfClass:JSONModel.class];
+    BOOL b3 = [API_ResponseModel.class isEqual:JSONModel.class];
+    
+    
+    NSLog(@"b:%@  b2:%@ b3:%@",@(b),@(b2),@(b3));
+    
     [ATHttpClient startNetworkMonitoring:^(AFNetworkReachabilityStatus status) {
         ATHttpClientPrint(@"网络状态: %@",[ATHttpClient networkStatusStr:status]);
     }];
+    
+    //设置json默认类型
+    [ATHttpClient setJsonModelClass:API_ResponseModel.class];
     
     //这里处理manager
     [ATHttpClient setGlobalSessionManagerInterceptor:^AFHTTPSessionManager * _Nonnull(AFHTTPSessionManager * _Nonnull manager, ATHttpRequest * _Nonnull req) {
