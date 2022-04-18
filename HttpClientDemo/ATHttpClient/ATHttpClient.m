@@ -16,6 +16,13 @@
     return instance;
 }
 
+- (ATHttpUrlManager *)baseUrlsManager{
+    if(!_baseUrlsManager){
+        _baseUrlsManager = [ATHttpUrlManager new];
+    }
+    return _baseUrlsManager;
+}
+
 - (void)startNetworkMonitoring:(void (^)(AFNetworkReachabilityStatus status))monitoringBlock{
     [AFNetworkReachabilityManager.sharedManager setReachabilityStatusChangeBlock:monitoringBlock];
     [AFNetworkReachabilityManager.sharedManager startMonitoring];
