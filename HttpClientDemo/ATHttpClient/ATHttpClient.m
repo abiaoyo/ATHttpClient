@@ -55,8 +55,8 @@ static ATHttpFailureInterceptor _globalFailureInterceptor = nil;
 
 
 + (void)startNetworkMonitoring:(void (^)(AFNetworkReachabilityStatus status))monitoringBlock{
-    [AFNetworkReachabilityManager.sharedManager startMonitoring];
     [AFNetworkReachabilityManager.sharedManager setReachabilityStatusChangeBlock:monitoringBlock];
+    [AFNetworkReachabilityManager.sharedManager startMonitoring];
 }
 
 + (NSString *)coverterNetworkStatus:(AFNetworkReachabilityStatus)status{
