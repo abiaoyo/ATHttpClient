@@ -1,5 +1,5 @@
 //
-//  ATHttpUrlManager.h
+//  ATHttpUrlsPool.h
 //  HttpClientDemo
 //
 //  Created by abiaoyo on 2022/4/18.
@@ -9,7 +9,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface ATHttpUrlManager : NSObject
+@interface ATHttpUrlsPool : NSObject
 
 @property (nonatomic,copy,readonly) NSArray<NSString *> * urls;
 @property (nonatomic,copy,readonly) NSString * _Nullable currentUrl;

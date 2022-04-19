@@ -1,18 +1,18 @@
 //
-//  ATHttpUrlManager.m
+//  ATHttpUrlsPool.m
 //  HttpClientDemo
 //
 //  Created by abiaoyo on 2022/4/18.
 //
 
-#import "ATHttpUrlManager.h"
+#import "ATHttpUrlsPool.h"
 
-@interface ATHttpUrlManager()
+@interface ATHttpUrlsPool()
 @property (nonatomic,copy) NSMutableArray<NSString *> * mUrls;
 @property (nonatomic,assign) NSInteger index;
 @end
 
-@implementation ATHttpUrlManager
+@implementation ATHttpUrlsPool
 
 - (void)addUrls:(NSArray<NSString *> *)urls{
     [self.mUrls addObjectsFromArray:urls];

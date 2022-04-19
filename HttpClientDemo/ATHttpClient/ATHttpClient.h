@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic,copy) ATHttpResponseInterceptor globalResponseSuccessInterceptor;
 @property (nonatomic,copy) ATHttpResponseInterceptor globalResponseFailureInterceptor;
 
-@property (nonatomic,strong,readonly) ATHttpUrlManager * baseUrlsManager;
+@property (nonatomic,strong,readonly) ATHttpUrlsPool * baseUrlsPool;
 @property (nonatomic,assign,readonly) AFNetworkReachabilityStatus networkStatus;
 @property (nonatomic,strong) Class jsonModelClass;//JSONModel sub class
 

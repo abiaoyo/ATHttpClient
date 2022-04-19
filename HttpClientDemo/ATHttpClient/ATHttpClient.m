@@ -2,7 +2,7 @@
 
 
 @interface ATHttpClient()
-@property (nonatomic,strong) ATHttpUrlManager * baseUrlsManager;
+@property (nonatomic,strong) ATHttpUrlsPool * baseUrlsPool;
 @end
 
 @implementation ATHttpClient
@@ -16,11 +16,11 @@
     return instance;
 }
 
-- (ATHttpUrlManager *)baseUrlsManager{
-    if(!_baseUrlsManager){
-        _baseUrlsManager = [ATHttpUrlManager new];
+- (ATHttpUrlsPool *)baseUrlsPool{
+    if(!_baseUrlsPool){
+        _baseUrlsPool = [ATHttpUrlsPool new];
     }
-    return _baseUrlsManager;
+    return _baseUrlsPool;
 }
 
 - (void)startNetworkMonitoring:(void (^)(AFNetworkReachabilityStatus status))monitoringBlock{
@@ -56,7 +56,7 @@
 - (NSURLSessionDataTask *)sendRequest:(ATHttpRequest *)request
                               manager:(AFHTTPSessionManager *)manager{
     if(request.baseUrl.length == 0){
-        request.baseUrl = self.baseUrlsManager.currentUrl;
+        request.baseUrl = self.baseUrlsPool.currentUrl;
     }
     //判断是否能请求
     if(![request.ext canSendRequest]){

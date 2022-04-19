@@ -25,7 +25,7 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
         
-    [ATHttpClient.client.baseUrlsManager addUrls:@[@"https://www.tianqiapi.com"]];
+    [ATHttpClient.client.baseUrlsPool addUrls:@[@"https://www.tianqiapi.com"]];
     [ATHttpClient.client startNetworkMonitoring:^(AFNetworkReachabilityStatus status) {
         ATHttpClientPrint(@"网络状态: %@",@(status));
     }];
