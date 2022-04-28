@@ -1,0 +1,16 @@
+PODS:
+  - ATHttpClient (0.1.0)
+
+DEPENDENCIES:
+  - ATHttpClient (from `../`)
+
+EXTERNAL SOURCES:
+  ATHttpClient:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  ATHttpClient: 4dcf49ce0d9257929bcecdd7e732acf877685bb4
+
+PODFILE CHECKSUM: 1511298d64debb789b7035e1554116d3b833d27b
+
+COCOAPODS: 1.11.3

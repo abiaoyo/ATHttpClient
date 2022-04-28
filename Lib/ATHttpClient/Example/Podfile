@@ -1,0 +1,6 @@
+use_frameworks!
+target 'ATHttpClient_Tests' do
+  pod 'ATHttpClient', :path => '../'
+  
+  
+end

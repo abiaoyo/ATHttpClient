@@ -1,0 +1,31 @@
+PODS:
+  - Alamofire (5.6.1)
+  - ATHttpClient (0.1.0):
+    - Alamofire (~> 5.1)
+    - HandyJSON (~> 5.0)
+    - JSONModel
+  - HandyJSON (5.0.2)
+  - JSONModel (1.8.0)
+
+DEPENDENCIES:
+  - ATHttpClient (from `Lib/ATHttpClient`)
+
+SPEC REPOS:
+  trunk:
+    - Alamofire
+    - HandyJSON
+    - JSONModel
+
+EXTERNAL SOURCES:
+  ATHttpClient:
+    :path: Lib/ATHttpClient
+
+SPEC CHECKSUMS:
+  Alamofire: 87bd8c952f9a4454320fce00d9cc3de57bcadaf5
+  ATHttpClient: d59e6c49757bcd58c4c6402f6721d36c61ffdcf5
+  HandyJSON: 9e4e236f5d2dbefad5155a77417bbea438201c03
+  JSONModel: 02ab723958366a3fd27da57ea2af2113658762e9
+
+PODFILE CHECKSUM: 6aaf5f36a4eae01de7ade204a641fb802367b96b
+
+COCOAPODS: 1.11.3

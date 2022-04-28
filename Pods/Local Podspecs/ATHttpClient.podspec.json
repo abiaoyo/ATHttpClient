@@ -1,0 +1,35 @@
+{
+  "name": "ATHttpClient",
+  "version": "0.1.0",
+  "summary": "A short description of ATHttpClient.",
+  "description": "TODO: Add long description of the pod here.",
+  "homepage": "https://github.com/abiaoyo/ATHttpClient",
+  "license": {
+    "type": "MIT",
+    "file": "LICENSE"
+  },
+  "authors": {
+    "abiaoyo": "347991555@qq.com"
+  },
+  "source": {
+    "git": "https://github.com/abiaoyo/ATHttpClient.git",
+    "tag": "0.1.0"
+  },
+  "platforms": {
+    "ios": "10.0"
+  },
+  "swift_versions": "5.0",
+  "source_files": "ATHttpClient/Classes/**/*",
+  "dependencies": {
+    "HandyJSON": [
+      "~> 5.0"
+    ],
+    "JSONModel": [
+
+    ],
+    "Alamofire": [
+      "~> 5.1"
+    ]
+  },
+  "swift_version": "5.0"
+}
