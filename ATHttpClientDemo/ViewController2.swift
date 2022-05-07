@@ -10,7 +10,7 @@ struct WeatherInfo : HandyJSON{
     var cityid:Int = 0
 }
 
-class WeatherResponse<T:HandyJSON> : ATHttpHandyJson<T> {
+class WeatherResponse : ATHttpHandyJsonResponse<WeatherInfo> {
     override func mapping(mapper: HelpingMapper) {
         mapper <<<
                     self.data <-- "weatherinfo"
@@ -34,9 +34,10 @@ class ViewController2: UIViewController {
         request.headers = ["time":"1234","age":"23"]
         request.params = ["age":"230","sex":0]
         
-        ATHttpClient.client.sendRequest(request) { (jsonResponse:WeatherResponse<WeatherInfo>?) in
-            print("resp: .status:\(jsonResponse?.status)  .message:\(jsonResponse?.message)   .data:\(jsonResponse?.data)")
-            print("jsonResponse: \(jsonResponse)")
+        ATHttpClient.client.sendRequest(request) { (handyJsonResponse:WeatherResponse?) in
+
+            print("resp: .status:\(handyJsonResponse?.status)  .message:\(handyJsonResponse?.message)   .data:\(handyJsonResponse?.data)")
+            print("jsonResponse: \(handyJsonResponse)")
         } failure: { error in
             print("error: \(error)")
         }

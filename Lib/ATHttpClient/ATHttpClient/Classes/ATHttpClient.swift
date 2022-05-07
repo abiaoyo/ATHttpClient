@@ -34,7 +34,7 @@ public typealias ATHttpNetworkStatusListener = (_ status: ATHttpNetworkStatus) -
 public typealias ATHttpRetryRequestHandler = (_ request: ATHttpRequest) -> Void
 public typealias ATHttpRequestHandler = (_ request: ATHttpRequest) -> Void
 public typealias ATHttpResponseSuccessHandler = (_ request: ATHttpRequest, _ response:Dictionary<String,Any>?) -> Bool
-public typealias ATHttpResponseFailureHandler = (_ request: ATHttpRequest, _ error:Error) -> Void
+public typealias ATHttpResponseFailureHandler = (_ request: ATHttpRequest, _ error:Error) -> Error?
 
 
 @objcMembers
@@ -261,6 +261,8 @@ public class ATHttpClient: NSObject{
                 break
             case .failure(let error):
                 
+                var _err = error as Error
+                
                 if request.ext.canSendRequest() {
                     
                     DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500)) {
@@ -274,11 +276,12 @@ public class ATHttpClient: NSObject{
                 }else{
                     
                     if !request.ext.disableResponseFailureInterceptor {
-                        
-                        self.responseFailureInterceptor?(request, error)
+                        if let e = self.responseFailureInterceptor?(request, _err) {
+                            _err = e
+                        }
                     }
-                    request.failure?(request, error)
-                    rsFailure?(error)
+                    request.failure?(request, _err)
+                    rsFailure?(_err)
                 }
                 break
             }
@@ -306,12 +309,10 @@ extension ATHttpClient {
         return sendRequest(request, success: nil, failure: nil)
     }
     
-    
     @discardableResult
-    public func sendRequest<T:HandyJSON, Response: ATHttpHandyJson<T>>(_ request: ATHttpRequest, success:@escaping ((_ jsonResponse:Response?) -> Void), failure:@escaping (_ error: Error?) -> Void) -> ATHttpTask{
-        
+    public func sendRequest<T:Any,HandyJsonResponse:ATHttpHandyJsonResponse<T>>(_ request: ATHttpRequest, success:@escaping ((_ handyJsonResponse:HandyJsonResponse?) -> Void), failure:@escaping (_ error: Error?) -> Void) -> ATHttpTask {
         return sendRequest(request) { resp in
-            success(Response.deserialize(from: resp))
+            success(HandyJsonResponse.deserialize(from: resp))
         } failure: { error in
             failure(error)
         }
@@ -344,10 +345,10 @@ extension ATHttpClient {
     }
     
     @discardableResult
-    public func upload<T:HandyJSON, Response: ATHttpHandyJson<T>>(_ request: ATHttpRequest, data:Data, fileName:String, type:ATHttpFileType, uploadProgress:((_ progress:Progress) -> Void)?, success:@escaping ((_ jsonResponse:Response?) -> Void), failure:@escaping (_ error: Error?) -> Void) -> ATHttpTask{
+    public func upload<T:Any,HandyJsonResponse:ATHttpHandyJsonResponse<T>>(_ request: ATHttpRequest, data:Data, fileName:String, type:ATHttpFileType, uploadProgress:((_ progress:Progress) -> Void)?, success:@escaping ((_ jsonResponse:HandyJsonResponse?) -> Void), failure:@escaping (_ error: Error?) -> Void) -> ATHttpTask{
         
         return upload(request, data: data, fileName: fileName, type: type, uploadProgress: uploadProgress) { response in
-            success(Response.deserialize(from: response))
+            success(HandyJsonResponse.deserialize(from: response))
         } failure: { error in
             failure(error)
         }
@@ -378,10 +379,10 @@ extension ATHttpClient {
     }
     
     @discardableResult
-    public func upload<T:HandyJSON, Response: ATHttpHandyJson<T>>(_ request: ATHttpRequest, fileUrl:URL, fileName:String, type:ATHttpFileType, uploadProgress:((_ progress:Progress) -> Void)?, success:@escaping ((_ jsonResponse:Response?) -> Void), failure:@escaping (_ error: Error?) -> Void) -> ATHttpTask{
+    public func upload<T:Any,HandyJsonResponse:ATHttpHandyJsonResponse<T>>(_ request: ATHttpRequest, fileUrl:URL, fileName:String, type:ATHttpFileType, uploadProgress:((_ progress:Progress) -> Void)?, success:@escaping ((_ jsonResponse:HandyJsonResponse?) -> Void), failure:@escaping (_ error: Error?) -> Void) -> ATHttpTask{
         
         return upload(request, fileUrl: fileUrl, fileName: fileName, type: type, uploadProgress: uploadProgress) { response in
-            success(Response.deserialize(from: response))
+            success(HandyJsonResponse.deserialize(from: response))
         } failure: { error in
             failure(error)
         }

@@ -2,7 +2,7 @@ import Foundation
 import HandyJSON
 import JSONModel
 
-open class ATHttpHandyJson<T:HandyJSON>: HandyJSON{
+open class ATHttpHandyJsonResponse<T>: HandyJSON{
     
     public var status:Int?
     

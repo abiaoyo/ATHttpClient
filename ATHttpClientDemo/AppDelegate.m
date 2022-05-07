@@ -42,12 +42,12 @@
         NSLog(@"### response.headers: %@", req.ext.responseHeaders);
         return YES;
     };
-    ATHttpClient.client.responseFailureInterceptor = ^(ATHttpRequest * _Nonnull req, NSError * _Nonnull error) {
-
+    ATHttpClient.client.responseFailureInterceptor = ^NSError * _Nullable(ATHttpRequest * _Nonnull req, NSError * _Nonnull error) {
         NSLog(@"### 响应失败拦截");
         NSLog(@"### request.error: %@", error);
         NSLog(@"### request.headers: %@", req.ext.requestHeaders);
         NSLog(@"### response.headers: %@", req.ext.responseHeaders);
+        return error;
     };
     
     return YES;
