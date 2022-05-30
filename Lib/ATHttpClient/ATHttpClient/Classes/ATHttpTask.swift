@@ -1,16 +1,16 @@
-import Foundation
 import Alamofire
+import Foundation
 
 @objcMembers
-public class ATHttpTask: NSObject{
+public class ATHttpTask: NSObject {
+    private var dataRequest: DataRequest?
+    private var downloadRequest: DownloadRequest?
     
-    private var dataRequest:DataRequest?
-    private var downloadRequest:DownloadRequest?
-    
-    init(_ dataReqeust:DataRequest?) {
+    init(_ dataReqeust: DataRequest?) {
         self.dataRequest = dataReqeust
     }
-    init(downloadRequest:DownloadRequest?) {
+
+    init(downloadRequest: DownloadRequest?) {
         self.downloadRequest = downloadRequest
     }
     
@@ -20,16 +20,14 @@ public class ATHttpTask: NSObject{
     }
 }
 
-extension ATHttpTask {
-    
-    public func addToTaskBox(_ taskBox:ATHttpTaskBox) {
+public extension ATHttpTask {
+    func addToTaskBox(_ taskBox: ATHttpTaskBox) {
         taskBox.addTask(self)
     }
 }
 
 @objcMembers
-public class ATHttpTaskBox : NSObject{
-    
+public class ATHttpTaskBox: NSObject {
     var tasks = NSHashTable<ATHttpTask>.weakObjects()
     
     deinit {
@@ -49,5 +47,4 @@ public class ATHttpTaskBox : NSObject{
             task.cancel()
         }
     }
-    
 }

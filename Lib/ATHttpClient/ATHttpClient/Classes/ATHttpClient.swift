@@ -1,5 +1,5 @@
-import Foundation
 import Alamofire
+import Foundation
 import HandyJSON
 
 @objc public enum ATHttpNetworkStatus: Int {
@@ -8,7 +8,7 @@ import HandyJSON
     case ethernetOrWiFi
     case cellular
     
-    public var isReachable:Bool {
+    public var isReachable: Bool {
         return self == .ethernetOrWiFi || self == .cellular
     }
 }
@@ -17,78 +17,66 @@ import HandyJSON
     case image
     case video
     
-    var value:String {
-        get {
-            switch self {
-            case .image:
-                return "image"
-            case .video:
-                return "video"
-            }
+    var value: String {
+        switch self {
+        case .image:
+            return "image"
+        case .video:
+            return "video"
         }
     }
 }
 
-
 public typealias ATHttpNetworkStatusListener = (_ status: ATHttpNetworkStatus) -> Void
 public typealias ATHttpRetryRequestHandler = (_ request: ATHttpRequest) -> Void
 public typealias ATHttpRequestHandler = (_ request: ATHttpRequest) -> Void
-public typealias ATHttpResponseSuccessHandler = (_ request: ATHttpRequest, _ response:Dictionary<String,Any>?) -> Bool
-public typealias ATHttpResponseFailureHandler = (_ request: ATHttpRequest, _ error:Error) -> Error?
-
+public typealias ATHttpResponseSuccessHandler = (_ request: ATHttpRequest, _ response: [String: Any]?) -> Error?
+public typealias ATHttpResponseFailureHandler = (_ request: ATHttpRequest, _ error: Error) -> Error?
 
 @objcMembers
-public class ATHttpClient: NSObject{
-
-    public static let client = ATHttpClient.init()
+public class ATHttpClient: NSObject {
+    public static let client = ATHttpClient()
     
-    private static var _networkListener:ATHttpNetworkStatusListener?
+    private static var _networkListener: ATHttpNetworkStatusListener?
     
-    public static var networkStatus:ATHttpNetworkStatus {
-        get {
-            switch NetworkReachabilityManager.default!.status {
+    public static var networkStatus: ATHttpNetworkStatus {
+        switch NetworkReachabilityManager.default!.status {
+        case .notReachable:
+            return .notReachable
                 
-            case .notReachable:
-                return .notReachable
+        case .reachable(.cellular):
+            return .cellular
                 
-            case .reachable(.cellular):
-                return  .cellular
+        case .reachable(.ethernetOrWiFi):
+            return .ethernetOrWiFi
                 
-            case .reachable(.ethernetOrWiFi):
-                return .ethernetOrWiFi
-                
-            case .unknown:
-                break
-            }
+        case .unknown:
+            break
+        }
             
-            return .unknown
-        }
+        return .unknown
     }
     
-    public static var isReachable:Bool {
-        get {
-            return networkStatus.isReachable
-        }
+    public static var isReachable: Bool {
+        return networkStatus.isReachable
     }
     
-    public static func networkListening(_ handler:ATHttpNetworkStatusListener?) {
+    public static func networkListening(_ handler: ATHttpNetworkStatusListener?) {
         _networkListener = handler
         
-        NetworkReachabilityManager.default!.startListening(onUpdatePerforming: { status in
+        NetworkReachabilityManager.default!.startListening(onUpdatePerforming: { _ in
             _networkListener?(networkStatus)
         })
     }
     
-    public var retryRequestInterceptor:ATHttpRetryRequestHandler?
-    public var requestInterceptor:ATHttpRequestHandler?
-    public var responseSuccessInterceptor:ATHttpResponseSuccessHandler?
-    public var responseFailureInterceptor:ATHttpResponseFailureHandler?
-    public let baseUrlsPool = ATHttpUrlsPool.init()
+    public var retryRequestInterceptor: ATHttpRetryRequestHandler?
+    public var requestInterceptor: ATHttpRequestHandler?
+    public var responseSuccessInterceptor: ATHttpResponseSuccessHandler?
+    public var responseFailureInterceptor: ATHttpResponseFailureHandler?
+    public let baseUrlsPool = ATHttpUrlsPool()
     
-    private func paramsEncoding(_ paramsEncoding:ATHttpParamsEncoding) -> ParameterEncoding {
-        
+    private func paramsEncoding(_ paramsEncoding: ATHttpParamsEncoding) -> ParameterEncoding {
         switch paramsEncoding {
-            
         case .urlDefault:
             return URLEncoding.default
             
@@ -108,7 +96,6 @@ public class ATHttpClient: NSObject{
     
     @discardableResult
     private func _dataRequest(_ request: ATHttpRequest) -> DataRequest? {
-        
         if !request.ext.canSendRequest() {
             return nil
         }
@@ -125,19 +112,18 @@ public class ATHttpClient: NSObject{
         
         return AF.request(request.fullUrl,
                           method: HTTPMethod(rawValue: request.method.value),
-                          parameters: request.params,
+                          parameters: request.params.isEmpty ? nil : request.params,
                           encoding: paramsEncoding(request.encoding),
-                          headers: HTTPHeaders(request.headers),
+                          headers: request.headers.isEmpty ? nil : HTTPHeaders(request.headers),
                           interceptor: nil,
                           requestModifier: {
-            $0.timeoutInterval = request.timeout
-            $0.httpShouldHandleCookies = request.shouldHandlefCookies
-        })
+                              $0.timeoutInterval = request.timeout
+                              $0.httpShouldHandleCookies = request.shouldHandlefCookies
+                          })
     }
     
     @discardableResult
-    private func _uploadDataRequest(_ request: ATHttpRequest, fileUrl: URL, fileName:String, type:String,_ mimeType:String = "multipart/form-data") -> UploadRequest?{
-        
+    private func _uploadDataRequest(_ request: ATHttpRequest, fileUrl: URL, fileName: String, type: String, _ mimeType: String = "multipart/form-data") -> UploadRequest? {
         if !request.ext.canSendRequest() {
             return nil
         }
@@ -158,14 +144,12 @@ public class ATHttpClient: NSObject{
             formData.append(fileUrl, withName: "file", fileName: fileName, mimeType: mimeType)
             
         }, to: request.fullUrl, method: HTTPMethod(rawValue: request.method.value), headers: HTTPHeaders(request.headers)) {
-            
             $0.timeoutInterval = request.uploadTimeout
             $0.httpShouldHandleCookies = request.shouldHandlefCookies
-            
         }
     }
-    private func _uploadDataRequest(_ request: ATHttpRequest, data: Data, fileName:String, type:String, mimeType:String = "multipart/form-data") -> UploadRequest? {
-        
+
+    private func _uploadDataRequest(_ request: ATHttpRequest, data: Data, fileName: String, type: String, mimeType: String = "multipart/form-data") -> UploadRequest? {
         if !request.ext.canSendRequest() {
             return nil
         }
@@ -186,14 +170,12 @@ public class ATHttpClient: NSObject{
             formData.append(data, withName: "file", fileName: fileName, mimeType: mimeType)
             
         }, to: request.fullUrl, method: HTTPMethod(rawValue: request.method.value), headers: HTTPHeaders(request.headers)) {
-            
             $0.timeoutInterval = request.uploadTimeout
             $0.httpShouldHandleCookies = request.shouldHandlefCookies
         }
     }
     
     private func _downloadDataRequest(_ request: ATHttpRequest, cachePath: String? = nil) -> DownloadRequest? {
-
         if !request.ext.canSendRequest() {
             return nil
         }
@@ -212,7 +194,7 @@ public class ATHttpClient: NSObject{
         
         if let cachePath = cachePath {
             destination = { _, _ in
-                return (URL(fileURLWithPath: cachePath), [.createIntermediateDirectories, .removePreviousFile])
+                (URL(fileURLWithPath: cachePath), [.createIntermediateDirectories, .removePreviousFile])
             }
         }
         return AF.download(request.fullUrl, method: HTTPMethod(rawValue: request.method.value), parameters: request.params, headers: HTTPHeaders(request.headers), requestModifier: {
@@ -222,25 +204,37 @@ public class ATHttpClient: NSObject{
     }
     
     @discardableResult
-    private func _handleAF(_ request: ATHttpRequest, dataRequest:DataRequest?, rsRuccess: ((_ data:Data, _ dataDict:Dictionary<String, Any>?) -> Void)?,rsFailure: ((_ error: Error?) -> Void)?) -> ATHttpTask{
-        
-        let task = ATHttpTask.init(dataRequest)
-        
-        dataRequest?.responseData(completionHandler: { resp in
+    private func _handleAF(_ request: ATHttpRequest, dataRequest: DataRequest?, rsRuccess: ((_ data: Data, _ dataDict: [String: Any]?) -> Void)?, rsFailure: ((_ error: Error?) -> Void)?) -> ATHttpTask {
+        let task = ATHttpTask(dataRequest)
+        dataRequest?.validate().responseData(completionHandler: { resp in
             
             _ = task
             
-            request.ext.requestHeaders = resp.request?.allHTTPHeaderFields as? [String : String]
-            request.ext.responseHeaders = resp.response?.allHeaderFields as? [String : String]
+            request.ext.requestHeaders = resp.request?.allHTTPHeaderFields as? [String: String]
+            request.ext.responseHeaders = resp.response?.allHeaderFields as? [String: String]
+            request.ext.statusCode = resp.response?.statusCode ?? 0
             
             switch resp.result {
             case .success(let data):
-                let dataDict = try?JSONSerialization.jsonObject(with: data, options: .allowFragments) as? Dictionary<String, Any>
+                let dataDict = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any]
                 
                 if !request.ext.disableResponseSuccessInterceptor {
                     if let interceptor = self.responseSuccessInterceptor {
-                        let canContinue = interceptor(request, dataDict)
-                        if !canContinue {
+                        // 响应成功拦截
+                        let error = interceptor(request, dataDict)
+                        
+                        // 如果有异常，则跳转到失败回调
+                        if error != nil {
+                            
+                            if let _logicError = request.logicError {
+                                // 判断是否有逻辑错误回调
+                                _logicError(request, dataDict, error)
+                            } else if let _failure = request.failure {
+                                // 如果没有逻辑错误回调，则直接认为是网络失败
+                                _failure(request, error)
+                            } else {
+                                rsFailure?(error)
+                            }
                             return
                         }
                     }
@@ -249,32 +243,26 @@ public class ATHttpClient: NSObject{
                 request.success?(request, dataDict)
                 
                 if let _ = request.ext.jsonModelSuccess {
-                    
-                    if let jsonModel = try?request.ext.jsonModelClass.init(dictionary: dataDict) {
-                        request.ext.jsonModelSuccess?(request, dataDict ,jsonModel)
-                    }else{
+                    if let jsonModel = try? request.ext.jsonModelClass.init(dictionary: dataDict) {
+                        request.ext.jsonModelSuccess?(request, dataDict, jsonModel)
+                    } else {
                         request.ext.jsonModelSuccess?(request, dataDict, nil)
                     }
                 }
-                rsRuccess?(data,dataDict)
+                rsRuccess?(data, dataDict)
                 
-                break
             case .failure(let error):
                 
                 var _err = error as Error
                 
                 if request.ext.canSendRequest() {
-                    
                     DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500)) {
-                        
                         if !request.ext.disableRetryRequestInterceptor {
-                            
                             self.retryRequestInterceptor?(request)
                         }
                         self._handleAF(request, dataRequest: dataRequest, rsRuccess: rsRuccess, rsFailure: rsFailure)
                     }
-                }else{
-                    
+                } else {
                     if !request.ext.disableResponseFailureInterceptor {
                         if let e = self.responseFailureInterceptor?(request, _err) {
                             _err = e
@@ -283,48 +271,34 @@ public class ATHttpClient: NSObject{
                     request.failure?(request, _err)
                     rsFailure?(_err)
                 }
-                break
             }
         })
         return task
     }
 }
 
-extension ATHttpClient {
-    
+public extension ATHttpClient {
     @discardableResult
-    public func sendRequest(_ request: ATHttpRequest, success:((_ response: Dictionary<String,Any>?) -> Void)?, failure:((_ error: Error?) -> Void)?) -> ATHttpTask{
-        
+    func sendRequest(_ request: ATHttpRequest) -> ATHttpTask {
         let dataRequest = _dataRequest(request)
-        
-        return _handleAF(request, dataRequest: dataRequest) { data, dataDict in
-            success?(dataDict)
+        return _handleAF(request, dataRequest: dataRequest, rsRuccess: nil, rsFailure: nil)
+    }
+    
+    @discardableResult
+    func sendRequest<T: Any, HandyJsonResponse: ATHttpHandyJsonResponse<T>>(_ request: ATHttpRequest, success: @escaping ((_ handyJsonResponse: HandyJsonResponse?) -> Void), failure: @escaping (_ error: Error?) -> Void) -> ATHttpTask {
+        let dataRequest = _dataRequest(request)
+        return _handleAF(request, dataRequest: dataRequest) { _, dataDict in
+            success(HandyJsonResponse.deserialize(from: dataDict))
         } rsFailure: { error in
-            failure?(error)
-        }
-    }
-    
-    @discardableResult
-    public func sendRequest(_ request: ATHttpRequest) -> ATHttpTask{
-        return sendRequest(request, success: nil, failure: nil)
-    }
-    
-    @discardableResult
-    public func sendRequest<T:Any,HandyJsonResponse:ATHttpHandyJsonResponse<T>>(_ request: ATHttpRequest, success:@escaping ((_ handyJsonResponse:HandyJsonResponse?) -> Void), failure:@escaping (_ error: Error?) -> Void) -> ATHttpTask {
-        return sendRequest(request) { resp in
-            success(HandyJsonResponse.deserialize(from: resp))
-        } failure: { error in
             failure(error)
         }
     }
 }
 
-extension ATHttpClient {
-    
-    //upload data
+public extension ATHttpClient {
+    // upload data
     @discardableResult
-    public func upload(_ request: ATHttpRequest, data:Data, fileName:String, type:ATHttpFileType, uploadProgress:((_ progress:Progress) -> Void)?, success:((_ response: Dictionary<String,Any>?) -> Void)?, failure:((_ error: Error?) -> Void)?) -> ATHttpTask{
-        
+    func upload(_ request: ATHttpRequest, data: Data, fileName: String, type: ATHttpFileType, uploadProgress: ((_ progress: Progress) -> Void)?, success: ((_ response: [String: Any]?) -> Void)?, failure: ((_ error: Error?) -> Void)?) -> ATHttpTask {
         let dataRequest = _uploadDataRequest(request, data: data, fileName: fileName, type: type.value)
         
         dataRequest?.uploadProgress(closure: { p in
@@ -332,7 +306,7 @@ extension ATHttpClient {
             uploadProgress?(p)
         })
         
-        return _handleAF(request, dataRequest: dataRequest) { data, dataDict in
+        return _handleAF(request, dataRequest: dataRequest) { _, dataDict in
             success?(dataDict)
         } rsFailure: { error in
             failure?(error)
@@ -340,13 +314,12 @@ extension ATHttpClient {
     }
     
     @discardableResult
-    public func upload(_ request: ATHttpRequest, data:Data, fileName:String, type:ATHttpFileType) -> ATHttpTask{
+    func upload(_ request: ATHttpRequest, data: Data, fileName: String, type: ATHttpFileType) -> ATHttpTask {
         return upload(request, data: data, fileName: fileName, type: type, uploadProgress: nil, success: nil, failure: nil)
     }
     
     @discardableResult
-    public func upload<T:Any,HandyJsonResponse:ATHttpHandyJsonResponse<T>>(_ request: ATHttpRequest, data:Data, fileName:String, type:ATHttpFileType, uploadProgress:((_ progress:Progress) -> Void)?, success:@escaping ((_ jsonResponse:HandyJsonResponse?) -> Void), failure:@escaping (_ error: Error?) -> Void) -> ATHttpTask{
-        
+    func upload<T: Any, HandyJsonResponse: ATHttpHandyJsonResponse<T>>(_ request: ATHttpRequest, data: Data, fileName: String, type: ATHttpFileType, uploadProgress: ((_ progress: Progress) -> Void)?, success: @escaping ((_ jsonResponse: HandyJsonResponse?) -> Void), failure: @escaping (_ error: Error?) -> Void) -> ATHttpTask {
         return upload(request, data: data, fileName: fileName, type: type, uploadProgress: uploadProgress) { response in
             success(HandyJsonResponse.deserialize(from: response))
         } failure: { error in
@@ -354,11 +327,9 @@ extension ATHttpClient {
         }
     }
     
-    
     // upload fileUrl
     @discardableResult
-    public func upload(_ request: ATHttpRequest, fileUrl:URL, fileName:String, type:ATHttpFileType, uploadProgress:((_ progress:Progress) -> Void)?, success:((_ response: Dictionary<String,Any>?) -> Void)?, failure:((_ error: Error?) -> Void)?) -> ATHttpTask{
-        
+    func upload(_ request: ATHttpRequest, fileUrl: URL, fileName: String, type: ATHttpFileType, uploadProgress: ((_ progress: Progress) -> Void)?, success: ((_ response: [String: Any]?) -> Void)?, failure: ((_ error: Error?) -> Void)?) -> ATHttpTask {
         let dataRequest = _uploadDataRequest(request, fileUrl: fileUrl, fileName: fileName, type: type.value)
         
         dataRequest?.uploadProgress(closure: { p in
@@ -366,7 +337,7 @@ extension ATHttpClient {
             uploadProgress?(p)
         })
         
-        return _handleAF(request, dataRequest: dataRequest) { data, dataDict in
+        return _handleAF(request, dataRequest: dataRequest) { _, dataDict in
             success?(dataDict)
         } rsFailure: { error in
             failure?(error)
@@ -374,13 +345,12 @@ extension ATHttpClient {
     }
     
     @discardableResult
-    public func upload(_ request: ATHttpRequest, fileUrl:URL, fileName:String, type:ATHttpFileType) -> ATHttpTask{
+    func upload(_ request: ATHttpRequest, fileUrl: URL, fileName: String, type: ATHttpFileType) -> ATHttpTask {
         return upload(request, fileUrl: fileUrl, fileName: fileName, type: type, uploadProgress: nil, success: nil, failure: nil)
     }
     
     @discardableResult
-    public func upload<T:Any,HandyJsonResponse:ATHttpHandyJsonResponse<T>>(_ request: ATHttpRequest, fileUrl:URL, fileName:String, type:ATHttpFileType, uploadProgress:((_ progress:Progress) -> Void)?, success:@escaping ((_ jsonResponse:HandyJsonResponse?) -> Void), failure:@escaping (_ error: Error?) -> Void) -> ATHttpTask{
-        
+    func upload<T: Any, HandyJsonResponse: ATHttpHandyJsonResponse<T>>(_ request: ATHttpRequest, fileUrl: URL, fileName: String, type: ATHttpFileType, uploadProgress: ((_ progress: Progress) -> Void)?, success: @escaping ((_ jsonResponse: HandyJsonResponse?) -> Void), failure: @escaping (_ error: Error?) -> Void) -> ATHttpTask {
         return upload(request, fileUrl: fileUrl, fileName: fileName, type: type, uploadProgress: uploadProgress) { response in
             success(HandyJsonResponse.deserialize(from: response))
         } failure: { error in
@@ -389,14 +359,12 @@ extension ATHttpClient {
     }
 }
 
-extension ATHttpClient {
-    
+public extension ATHttpClient {
     @discardableResult
-    public func download(_ request: ATHttpRequest, cachePath: String, downloadProgress:((_ progress:Progress) -> Void)?, success:((_ url: URL) -> Void)?, failure:((_ error: Error?) -> Void)?) -> ATHttpTask{
-        
+    func download(_ request: ATHttpRequest, cachePath: String, downloadProgress: ((_ progress: Progress) -> Void)?, success: ((_ url: URL) -> Void)?, failure: ((_ error: Error?) -> Void)?) -> ATHttpTask {
         let downloadRequest = _downloadDataRequest(request, cachePath: cachePath)
         
-        let task = ATHttpTask.init(downloadRequest: downloadRequest)
+        let task = ATHttpTask(downloadRequest: downloadRequest)
         
         downloadRequest?.downloadProgress(closure: { p in
             request.downloadProgress?(request, p)
@@ -419,5 +387,4 @@ extension ATHttpClient {
         
         return task
     }
-
 }

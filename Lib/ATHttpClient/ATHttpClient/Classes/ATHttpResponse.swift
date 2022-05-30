@@ -2,15 +2,14 @@ import Foundation
 import HandyJSON
 import JSONModel
 
-open class ATHttpHandyJsonResponse<T>: HandyJSON{
+open class ATHttpHandyJsonResponse<T>: HandyJSON {
+    public var status: Int?
     
-    public var status:Int?
+    public var message: String?
     
-    public var message:String?
+    public var data: T?
     
-    public var data:T?
-    
-    required public init() {}
+    public required init() {}
     
     open func mapping(mapper: HelpingMapper) {
         mapper <<< self.data <-- ["data", "client", "devices"]
@@ -19,14 +18,13 @@ open class ATHttpHandyJsonResponse<T>: HandyJSON{
 
 @objcMembers
 open class ATHttpJsonModel: JSONModel {
+    public var status: Int = 200
     
-    public var status:Int = 200
+    public var message: String?
     
-    public var message:String?
+    public var data: [String: Any]?
     
-    public var data:Dictionary<String,Any>?
-    
-    open override class func propertyIsOptional(_ propertyName: String!) -> Bool {
+    override open class func propertyIsOptional(_ propertyName: String!) -> Bool {
         return true
     }
 }

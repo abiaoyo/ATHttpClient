@@ -1,38 +1,34 @@
 import Foundation
 
 @objcMembers
-public class ATHttpUrlsPool: NSObject{
+public class ATHttpUrlsPool: NSObject {
+    private(set) var _urls: [String] = []
     
-    private(set) var _urls:[String] = []
+    private(set) var _index: Int = 0
     
-    private(set) var _index:Int = 0
-    
-    public var urls:[String] {
-        get {
-            return _urls;
-        }
+    public var urls: [String] {
+        return _urls
     }
     
-    public var currentUrl:String {
-        get {
-            if _index < _urls.count {
-                return _urls[_index]
-            }
-            return ""
+    public var currentUrl: String {
+        if _index < _urls.count {
+            return _urls[_index]
         }
+        return ""
     }
-    public func add(_ urls:[String]) {
+
+    public func add(_ urls: [String]) {
         _urls.append(contentsOf: urls)
     }
     
-    public func update(_ urls:[String]) {
+    public func update(_ urls: [String]) {
         _urls.removeAll()
         _urls.append(contentsOf: urls)
     }
     
-    public func remove(_ urls:[String]) {
+    public func remove(_ urls: [String]) {
         _urls.removeAll { url in
-            return urls.contains(url)
+            urls.contains(url)
         }
     }
     
@@ -49,7 +45,6 @@ public class ATHttpUrlsPool: NSObject{
     }
     
     public func next() {
-        
         let count = _urls.count
         
         if count > 0 {
@@ -57,13 +52,12 @@ public class ATHttpUrlsPool: NSObject{
             if _index >= count {
                 _index = 0
             }
-        }else{
+        } else {
             _index = 0
         }
     }
     
-    public func selectIndex(_ index:Int) {
-        
+    public func selectIndex(_ index: Int) {
         if index >= 0 && index < _urls.count {
             _index = index
         }

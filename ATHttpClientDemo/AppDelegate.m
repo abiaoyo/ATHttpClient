@@ -36,11 +36,11 @@
         [ATHttpClient.client.baseUrlsPool next];
     };
     
-    ATHttpClient.client.responseSuccessInterceptor = ^BOOL(ATHttpRequest * _Nonnull req, NSDictionary<NSString *,id> * _Nullable response) {
+    ATHttpClient.client.responseSuccessInterceptor = ^NSError * _Nullable(ATHttpRequest * _Nonnull req, NSDictionary<NSString *,id> * _Nullable response) {
         NSLog(@"### 响应成功拦截");
         NSLog(@"### request.headers: %@", req.ext.requestHeaders);
         NSLog(@"### response.headers: %@", req.ext.responseHeaders);
-        return YES;
+        return nil;
     };
     ATHttpClient.client.responseFailureInterceptor = ^NSError * _Nullable(ATHttpRequest * _Nonnull req, NSError * _Nonnull error) {
         NSLog(@"### 响应失败拦截");
