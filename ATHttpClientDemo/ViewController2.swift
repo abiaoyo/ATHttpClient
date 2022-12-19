@@ -23,7 +23,8 @@ class ViewController2: UIViewController {
 
         print("baseUrls: \(ATHttpClient.client.baseUrlsPool.urls)")
 
-        ATHttpClient.networkListening { _ in
+        ATHttpClient.initNetworkListening { status in
+            
         }
 
         let request = ATHttpRequest.get

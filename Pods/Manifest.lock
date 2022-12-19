@@ -1,9 +1,13 @@
 PODS:
   - Alamofire (5.6.1)
+  - AnyCodable-FlightSchool (0.6.7)
   - ATHttpClient (0.1.0):
     - Alamofire (~> 5.1)
+    - AnyCodable-FlightSchool
+    - ATMultiBlocks (~> 0.3)
     - HandyJSON (~> 5.0)
     - JSONModel
+  - ATMultiBlocks (0.3)
   - HandyJSON (5.0.2)
   - JSONModel (1.8.0)
 
@@ -13,6 +17,8 @@ DEPENDENCIES:
 SPEC REPOS:
   trunk:
     - Alamofire
+    - AnyCodable-FlightSchool
+    - ATMultiBlocks
     - HandyJSON
     - JSONModel
 
@@ -22,7 +28,9 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Alamofire: 87bd8c952f9a4454320fce00d9cc3de57bcadaf5
-  ATHttpClient: d59e6c49757bcd58c4c6402f6721d36c61ffdcf5
+  AnyCodable-FlightSchool: 261cbe76757802b17d471b9059b21e6fa5edf57b
+  ATHttpClient: ef312e137a4e6e371874c775a6ea423625097ecd
+  ATMultiBlocks: 3ebb6d0bf661708bab1a9b2aea67f3c50c3fcc18
   HandyJSON: 9e4e236f5d2dbefad5155a77417bbea438201c03
   JSONModel: 02ab723958366a3fd27da57ea2af2113658762e9
 

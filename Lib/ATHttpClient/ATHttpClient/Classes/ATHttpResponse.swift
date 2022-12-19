@@ -22,9 +22,27 @@ open class ATHttpJsonModel: JSONModel {
     
     public var message: String?
     
-    public var data: [String: Any]?
-    
     override open class func propertyIsOptional(_ propertyName: String!) -> Bool {
         return true
+    }
+    
+    open func rsData() -> Any? {
+        return nil
+    }
+}
+
+@objcMembers
+open class ATHttpJsonDictModel: ATHttpJsonModel {
+    public var data: [String: Any]?
+    open override func rsData() -> Any? {
+        return data
+    }
+}
+
+@objcMembers
+open class ATHttpJsonArrayModel: ATHttpJsonModel {
+    public var data: Array<Any>?
+    open override func rsData() -> Any? {
+        return data
     }
 }

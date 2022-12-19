@@ -1,5 +1,7 @@
 ${PODS_ROOT}/Target Support Files/Pods-ATHttpClientDemo/Pods-ATHttpClientDemo-frameworks.sh
 ${BUILT_PRODUCTS_DIR}/ATHttpClient/ATHttpClient.framework
+${BUILT_PRODUCTS_DIR}/ATMultiBlocks/ATMultiBlocks.framework
 ${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework
+${BUILT_PRODUCTS_DIR}/AnyCodable-FlightSchool/AnyCodable.framework
 ${BUILT_PRODUCTS_DIR}/HandyJSON/HandyJSON.framework
 ${BUILT_PRODUCTS_DIR}/JSONModel/JSONModel.framework

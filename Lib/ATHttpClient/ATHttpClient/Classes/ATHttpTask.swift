@@ -3,20 +3,14 @@ import Foundation
 
 @objcMembers
 public class ATHttpTask: NSObject {
-    private var dataRequest: DataRequest?
-    private var downloadRequest: DownloadRequest?
+    private var request: Request?
     
-    init(_ dataReqeust: DataRequest?) {
-        self.dataRequest = dataReqeust
-    }
-
-    init(downloadRequest: DownloadRequest?) {
-        self.downloadRequest = downloadRequest
+    init(_ request: Request?) {
+        self.request = request
     }
     
     public func cancel() {
-        dataRequest?.cancel()
-        downloadRequest?.cancel()
+        request?.cancel()
     }
 }
 

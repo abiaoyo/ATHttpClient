@@ -19,7 +19,7 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
     
-    [ATHttpClient networkListening:^(enum ATHttpNetworkStatus status) {
+    [ATHttpClient initNetworkListening:^(enum ATHttpNetworkStatus status) {
         NSLog(@"### 网络状态: %@",@(status));
     }];
     

@@ -29,6 +29,12 @@
     ],
     "Alamofire": [
       "~> 5.1"
+    ],
+    "ATMultiBlocks": [
+      "~> 0.3"
+    ],
+    "AnyCodable-FlightSchool": [
+
     ]
   },
   "swift_version": "5.0"

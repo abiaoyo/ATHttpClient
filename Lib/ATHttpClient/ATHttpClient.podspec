@@ -47,6 +47,8 @@ TODO: Add long description of the pod here.
   s.dependency 'HandyJSON', '~> 5.0'
   s.dependency 'JSONModel'
   s.dependency 'Alamofire', '~> 5.1'
+  s.dependency 'ATMultiBlocks', '~> 0.3'
+  s.dependency 'AnyCodable-FlightSchool'
 #
 #  s.subspec 'ForSwift' do |ss|
 #    ss.source_files         = 'ATHttpClient/Classes/ForSwift/*'
